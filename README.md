@@ -1,1 +1,1 @@
-# Crafterra
+![Crafterra](./logo.png)
