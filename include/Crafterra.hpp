@@ -77,6 +77,7 @@ namespace Crafterra {
 }
 #endif // CRAFTERRA_MAIN_FUNCTION
 
+#include <Crafterra/Basic/Type.hpp>
 
 namespace Crafterra {
 	namespace System {
@@ -87,8 +88,8 @@ namespace Crafterra {
 	}
 
 	// マップサイズ
-	constexpr std::size_t size_x{ 1024 };
-	constexpr std::size_t size_y{ 1024 };
+	constexpr ::Crafterra::IndexUint size_x{ 1024 };
+	constexpr ::Crafterra::IndexUint size_y{ 1024 };
 
 }
 

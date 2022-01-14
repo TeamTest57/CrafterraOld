@@ -46,6 +46,12 @@ namespace Crafterra {
 		int getKey(const ::std::size_t key_num_) const {
 			return this->key[key_num_];
 		}
+		int getUpKey(const ::std::size_t key_num_) const {
+			return this->up_key[key_num_];
+		}
+		int getDownKey(const ::std::size_t key_num_) const {
+			return this->down_key[key_num_];
+		}
 
 	};
 }

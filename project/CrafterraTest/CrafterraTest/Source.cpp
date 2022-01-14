@@ -10,16 +10,23 @@
 
 #include <DxLib.h>
 
+// Crafterra 
+#include <Crafterra.hpp>
+
 #include <memory>
 #include <new>
 #include <array>
 
 #include <random>
 
-// Crafterra 
-#include <Crafterra.hpp>
 
 namespace Crafterra {
+
+	enum PlayerMode : unsigned int {
+		player_mode_empty
+		,player_mode_human
+		,player_mode_airship
+	};
 
 	namespace System {
 		void crafterraMain(::Crafterra::CrafterraManager& cm_) {
@@ -48,6 +55,8 @@ namespace Crafterra {
 			terrain(field_map_matrix);
 
 			InputKey key;
+
+			PlayerMode player_mode = player_mode_airship;
 
 			while (::Crafterra::System::Update()) {
 				++time_count;
@@ -100,53 +109,71 @@ namespace Crafterra {
 						cs.camera_size.setWidth(re_init_csx);
 						cs.camera_size.setHeight(re_init_csy);
 					}
+					if (key.getDownKey(KEY_INPUT_1)) {
 
-					//
-				}
+						cs.map_chip_size.setWidth(6.f);
+						cs.map_chip_size.setHeight(6.f);
 
-				// 描画関数
-				cs.updateCamera(
-					[&](const float csx_, const float csy_, const float cw_, const float ch_, const std::size_t x_, const std::size_t y_) {
-
-						if (field_map_matrix[y_][x_].getBiome() == map_chip_type_biome_default) {
-							::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
-								cm_.getMapChip().getMapChip(0), TRUE);
-						}
-						else if (field_map_matrix[y_][x_].getBiome() == map_chip_type_biome_savannah) {
-							::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
-								cm_.getMapChip().getMapChip(5), TRUE);
-						}
-						else if (field_map_matrix[y_][x_].getBiome() == map_chip_type_biome_desert) {
-							::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
-								cm_.getMapChip().getMapChip(6), TRUE);
-						}
-
-						else ::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), field_map_matrix[y_][x_].getColor(), TRUE);
+						player_mode = player_mode_airship;
 					}
-				);
+					if (key.getDownKey(KEY_INPUT_2)) {
 
-				// カメラの中心を描画
-				//::DxLib::DrawCircle(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2, cs.map_chip_size.getWidthHalf(), 0x00111111, TRUE);
+						cs.map_chip_size.setWidth(64.f);
+						cs.map_chip_size.setHeight(64.f);
 
-				// 飛空艇の影を描画
-				::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-				::DxLib::DrawOval(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2 + cs.map_chip_size.getHeight() * 32,
-					cs.map_chip_size.getWidthHalf() * 8, cs.map_chip_size.getHeightHalf() * 4, 0x00111111, TRUE);
-				::DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+						player_mode = player_mode_human;
+					}
+				}
+				{
+					// 描画関数
+					cs.updateCamera(
+						[&](const float csx_, const float csy_, const float cw_, const float ch_, const std::size_t x_, const std::size_t y_) {
 
+							if (field_map_matrix[y_][x_].getDrawChip() >= 0) {
+								::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
+									cm_.getMapChip().getMapChip(field_map_matrix[y_][x_].getDrawChip()), TRUE);
+							}
+							else ::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), field_map_matrix[y_][x_].getColor(), TRUE);
+							
+						}
+					);
+				}
 				// 飛空艇のアニメーションを計算
 				int dir = 0;
-				int cd_anime2 = ((cd_anime == 3) ? 1 : cd_anime);
+				const int cd_anime2 = ((cd_anime == 3) ? 1 : cd_anime);
 				switch (cdt) {
 				case camera_type_down:dir = 0 + cd_anime2; break;
 				case camera_type_left:dir = 3 + cd_anime2; break;
 				case camera_type_right:dir = 6 + cd_anime2; break;
 				case camera_type_up:dir = 9 + cd_anime2; break;
 				}
-				// 飛空艇を描画
-				::DxLib::DrawRotaGraph(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2,
-					cs.map_chip_size.getWidthHalf(), 0.0,
-					cm_.getCharacterChip().getCharacterChip(dir), TRUE, FALSE);
+				// カメラの中心を描画
+				//::DxLib::DrawCircle(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2, cs.map_chip_size.getWidthHalf(), 0x00111111, TRUE);
+				switch (player_mode)
+				{
+				case Crafterra::player_mode_empty:
+					break;
+				case Crafterra::player_mode_human:
+					// 人間を描画
+					::DxLib::DrawRotaGraph(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2,
+						cs.map_chip_size.getWidthHalf() / 16, 0.0,
+						cm_.getCharacterChip().getCharacterChip(1, dir), TRUE, FALSE);
+					break;
+				case Crafterra::player_mode_airship:
+					// 飛空艇の影を描画
+					::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+					::DxLib::DrawOval(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2 + cs.map_chip_size.getHeight() * 32,
+						cs.map_chip_size.getWidthHalf() * 8, cs.map_chip_size.getHeightHalf() * 4, 0x00111111, TRUE);
+					::DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+					// 飛空艇を描画
+					::DxLib::DrawRotaGraph(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2,
+						cs.map_chip_size.getWidthHalf(), 0.0,
+						cm_.getCharacterChip().getCharacterChip(0, dir), TRUE, FALSE);
+					break;
+				default:
+					break;
+				}
 
 				// 座標を文字として出力
 				DrawFormatStringToHandle(10, 200, GetColor(255, 255, 255), cm_.getFont().getFont(),

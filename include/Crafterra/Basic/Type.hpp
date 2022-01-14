@@ -21,6 +21,10 @@ namespace Crafterra {
 	using Int32 = ::std::int_fast32_t;
 	using Uint32 = ::std::uint_fast32_t;
 
+
+	// 標高値
+	using ElevationUint = ::std::uint_fast16_t;
+
 }
 
 #endif //Included Crafterra Library

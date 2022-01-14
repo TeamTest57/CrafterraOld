@@ -11,6 +11,8 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_MAP_CHIP_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_MAP_CHIP_HPP
 
+#include <Crafterra/Basic/Type.hpp>
+
 namespace Crafterra {
 
 	using BiomeType = unsigned int;
@@ -49,11 +51,45 @@ namespace Crafterra {
 	private:
 		// マップチップの色
 		::Crafterra::Color::Color3 rgb{};
-		BiomeType biome{};
+		BiomeType biome{ map_chip_type_biome_empty };
 		BlockType block{};
+		ElevationUint elevation{};
+		ElevationUint elevation2{};
 		
+		int draw_chip = -1;
 
 	public:
+
+		void setDrawChip(const int draw_chip_) {
+			this->draw_chip = draw_chip_;
+		}
+		void setDrawChip() {
+			if (block == 0) {
+				if (biome == 0) {
+					draw_chip = -1;
+				}
+				switch (biome)
+				{
+				case map_chip_type_biome_empty:
+					draw_chip = -1;
+					break;
+				case map_chip_type_biome_default:
+					draw_chip = 0;
+					break;
+				case map_chip_type_biome_mountain:
+					draw_chip = 5;
+					break;
+				case map_chip_type_biome_desert:
+					draw_chip = 6;
+					break;
+				}
+
+			}
+		}
+		int getDrawChip() const {
+			return this->draw_chip;
+		}
+
 		::Crafterra::Color::Color3 getColor() const {
 			return this->rgb;
 		}
@@ -71,6 +107,19 @@ namespace Crafterra {
 		}
 		void setBlock(const BlockType& block_) {
 			this->block = block_;
+		}
+		ElevationUint getElevation() const {
+			return this->elevation;
+		}
+		void setElevation(const ElevationUint& elevation_) {
+			this->elevation = elevation_;
+		}
+		// 暫定
+		ElevationUint getElevation2() const {
+			return this->elevation2;
+		}
+		void setElevation2(const ElevationUint& elevation_) {
+			this->elevation2 = elevation_;
 		}
 
 	};
