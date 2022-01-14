@@ -1,0 +1,3 @@
+Fullscreen:OFF
+Window Width:600
+Window Height:1000
