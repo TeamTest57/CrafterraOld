@@ -92,8 +92,8 @@ namespace Crafterra {
 						terrain(field_map_matrix);
 					}
 					if (key.getKey(KEY_INPUT_J) >= 1) {
-						cs.map_chip_size.setWidth(cs.map_chip_size.getWidth() * 0.995);
-						cs.map_chip_size.setHeight(cs.map_chip_size.getHeight() * 0.995);
+						cs.map_chip_size.setWidth(cs.map_chip_size.getWidth() * 0.995f);
+						cs.map_chip_size.setHeight(cs.map_chip_size.getHeight() * 0.995f);
 
 						const float re_init_csx = float(cs.window_size.getWidth()) / cs.map_chip_size.getWidth();
 						const float re_init_csy = float(cs.window_size.getHeight()) / cs.map_chip_size.getHeight();
@@ -101,8 +101,8 @@ namespace Crafterra {
 						cs.camera_size.setHeight(re_init_csy);
 					}
 					if (key.getKey(KEY_INPUT_K) >= 1) {
-						cs.map_chip_size.setWidth(cs.map_chip_size.getWidth() * 1.005);
-						cs.map_chip_size.setHeight(cs.map_chip_size.getHeight() * 1.005);
+						cs.map_chip_size.setWidth(cs.map_chip_size.getWidth() * 1.005f);
+						cs.map_chip_size.setHeight(cs.map_chip_size.getHeight() * 1.005f);
 
 						const float re_init_csx = float(cs.window_size.getWidth()) / cs.map_chip_size.getWidth();
 						const float re_init_csy = float(cs.window_size.getHeight()) / cs.map_chip_size.getHeight();
@@ -162,8 +162,8 @@ namespace Crafterra {
 				case Crafterra::player_mode_airship:
 					// 飛空艇の影を描画
 					::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-					::DxLib::DrawOval(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2 + cs.map_chip_size.getHeight() * 32,
-						cs.map_chip_size.getWidthHalf() * 8, cs.map_chip_size.getHeightHalf() * 4, 0x00111111, TRUE);
+					::DxLib::DrawOval(int(cs.window_size.getWidth() / 2), int(cs.window_size.getHeight() / 2 + cs.map_chip_size.getHeight() * 32),
+						int(cs.map_chip_size.getWidthHalf() * 8), int(cs.map_chip_size.getHeightHalf() * 4), 0x00111111, TRUE);
 					::DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 					// 飛空艇を描画
