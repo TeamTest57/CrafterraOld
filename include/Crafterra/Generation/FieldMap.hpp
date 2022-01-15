@@ -62,10 +62,10 @@ namespace Crafterra {
 
 				temperature[row][col] -= elevation[row][col] / 2;
 				land[row][col] = 1;
-				//if (elevation[row][col] < 110) {
-				//	field_map_matrix[row][col].setBiome(map_chip_type_biome_sea);
-				//	land[row][col] = 0;
-				//}
+				if (elevation[row][col] < 110) {
+					field_map_matrix[row][col].setBiome(map_chip_type_biome_sea);
+					land[row][col] = 0;
+				}
 				//else 
 				if (temperature[row][col] < 45) field_map_matrix[row][col].setBiome(map_chip_type_biome_rock);
 				else if (amount_of_rainfall[row][col] < 25) field_map_matrix[row][col].setBiome(map_chip_type_biome_savannah);
@@ -95,11 +95,18 @@ namespace Crafterra {
 
 		for (::Crafterra::DataType::IndexUint row{}; row < size_y; ++row)
 			for (::Crafterra::DataType::IndexUint col{}; col < size_x; ++col) {
-				if (elevation[row][col] < 110 && land[row][col] == 0) field_map_matrix[row][col].setBiome(map_chip_type_biome_lake);
-
-				field_map_matrix[row][col].setElevation(elevation[row][col]);
-				field_map_matrix[row][col].setElevation2(elevation[row][col] / 16);
-
+				if (elevation[row][col] < 110 && land[row][col] == 0) {
+					field_map_matrix[row][col].setBiome(map_chip_type_biome_lake);
+				}
+				// 海
+				if (elevation[row][col] < 110) {
+					field_map_matrix[row][col].setElevation(110);
+					field_map_matrix[row][col].setElevation2(110 / 16);
+				}
+				else {
+					field_map_matrix[row][col].setElevation(elevation[row][col]);
+					field_map_matrix[row][col].setElevation2(elevation[row][col] / 16);
+				}
 
 
 				switch (field_map_matrix[row][col].getBiome()) {

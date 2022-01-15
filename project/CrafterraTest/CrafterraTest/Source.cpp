@@ -29,8 +29,7 @@ namespace Crafterra {
 	namespace System {
 		void crafterraMain(::Crafterra::CrafterraManager& cm_) {
 
-			using ActorDirectionType = unsigned int;
-			ActorDirectionType cdt = actor_direction_down;
+			ActorDirection cdt = actor_direction_down;
 			int cd_anime = 0; // アニメーション
 
 			int time_count = 0;
@@ -54,7 +53,7 @@ namespace Crafterra {
 
 			InputKey key;
 
-			OperationActorStateInFieldMap player_mode = operation_actor_state_in_field_map_airship;
+			OperationActorStateInFieldMap operation_actor_state_in_field = operation_actor_state_in_field_map_airship;
 
 			while (::Crafterra::System::Update()) {
 				++time_count;
@@ -112,14 +111,14 @@ namespace Crafterra {
 						cs.map_chip_size.setWidth(6.f);
 						cs.map_chip_size.setHeight(6.f);
 
-						player_mode = operation_actor_state_in_field_map_airship;
+						operation_actor_state_in_field = operation_actor_state_in_field_map_airship;
 					}
 					if (key.getDownKey(KEY_INPUT_2)) {
 
 						cs.map_chip_size.setWidth(64.f);
 						cs.map_chip_size.setHeight(64.f);
 
-						player_mode = operation_actor_state_in_field_map_walking;
+						operation_actor_state_in_field = operation_actor_state_in_field_map_walking;
 					}
 				}
 				{
@@ -154,8 +153,7 @@ namespace Crafterra {
 				}
 				// カメラの中心を描画
 				//::DxLib::DrawCircle(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2, cs.map_chip_size.getWidthHalf(), 0x00111111, TRUE);
-				switch (player_mode)
-				{
+				switch (operation_actor_state_in_field) {
 				case Crafterra::operation_actor_state_in_field_map_empty:
 					break;
 				case Crafterra::operation_actor_state_in_field_map_walking:
@@ -181,11 +179,11 @@ namespace Crafterra {
 				}
 
 				// 座標を文字として出力
-				DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), cm_.getFont().getFont(),
-					"Camera Center X: %.2f Y: %.2f\nCamera Start X: %.2f Y: %.2f"
-					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
-					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
-				);
+				//DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), cm_.getFont().getFont(),
+				//	"Camera Center X: %.2f Y: %.2f\nCamera Start X: %.2f Y: %.2f"
+				//	, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
+				//	, cs.camera_size.getStartX(), cs.camera_size.getStartY()
+				//);
 				//WaitKey();
 			}
 

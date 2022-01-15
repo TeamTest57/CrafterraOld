@@ -27,6 +27,7 @@ namespace Crafterra {
 	public:
 
 		using cs_uint = IndexUint;
+		using cs_int = Int32;
 		using cs_f32 = float;
 
 		using UintSize2D = ::Crafterra::Size2D<cs_uint>;
@@ -58,22 +59,22 @@ namespace Crafterra {
 		// 2D カメラ ( マップのピクセル数が一律の場合のみ使用可能 )
 		template<typename Draw_>
 		void updateCamera(Draw_ drawRect_) {
-			const cs_uint sy = cs_uint((::std::int32_t(this->camera_size.getStartY()) < ::std::int32_t(this->field_map_size.getStartY())) ?
+			const cs_uint sy = cs_uint((cs_int(this->camera_size.getStartY()) < cs_int(this->field_map_size.getStartY())) ?
 				cs_uint(this->field_map_size.getStartY()) : cs_uint(this->camera_size.getStartY()));
 
 			cs_f32 camera_y =
-				((::std::int32_t(this->camera_size.getStartY()) >= ::std::int32_t(this->field_map_size.getStartY())) ?
-				((cs_f32(::std::int32_t(this->camera_size.getStartY())) - this->camera_size.getStartY()) * cs_f32(this->map_chip_size.getHeight())) :
+				((cs_int(this->camera_size.getStartY()) >= cs_int(this->field_map_size.getStartY())) ?
+				((cs_f32(cs_int(this->camera_size.getStartY())) - this->camera_size.getStartY()) * cs_f32(this->map_chip_size.getHeight())) :
 					(cs_f32(this->window_size.getHeightHalf()) - (this->camera_size.getCenterY() - cs_f32(this->field_map_size.getStartY())) * cs_f32(this->map_chip_size.getHeight())));
 
 			for (cs_uint y = sy; y < this->field_map_size.getEndY(); ++y) {
 
-				const cs_uint sx = cs_uint((::std::int32_t(this->camera_size.getStartX()) < ::std::int32_t(this->field_map_size.getStartX())) ?
+				const cs_uint sx = cs_uint((cs_int(this->camera_size.getStartX()) < cs_int(this->field_map_size.getStartX())) ?
 					cs_uint(this->field_map_size.getStartX()) : cs_uint(this->camera_size.getStartX()));
 
 				cs_f32 camera_x =
-					((::std::int32_t(this->camera_size.getStartX()) >= ::std::int32_t(this->field_map_size.getStartX())) ?
-					((cs_f32(::std::int32_t(this->camera_size.getStartX())) - this->camera_size.getStartX()) * cs_f32(this->map_chip_size.getWidth())) :
+					((cs_int(this->camera_size.getStartX()) >= cs_int(this->field_map_size.getStartX())) ?
+					((cs_f32(cs_int(this->camera_size.getStartX())) - this->camera_size.getStartX()) * cs_f32(this->map_chip_size.getWidth())) :
 						(cs_f32(this->window_size.getWidthHalf()) - (this->camera_size.getCenterX() - cs_f32(this->field_map_size.getStartX())) * cs_f32(this->map_chip_size.getWidth())));
 
 				for (cs_uint x = sx; x < this->field_map_size.getEndX(); ++x) {

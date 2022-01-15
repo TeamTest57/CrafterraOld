@@ -108,8 +108,8 @@ namespace Crafterra {
 	}
 
 	// マップサイズ
-	constexpr ::Crafterra::IndexUint size_x{ 1024 };
-	constexpr ::Crafterra::IndexUint size_y{ 1024 };
+	constexpr ::Crafterra::DataType::IndexUint size_x = 512;
+	constexpr ::Crafterra::DataType::IndexUint size_y = 512;
 
 }
 
