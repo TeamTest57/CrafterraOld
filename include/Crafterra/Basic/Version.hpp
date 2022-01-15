@@ -19,24 +19,54 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_VERSION_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_VERSION_HPP
 
-// Crafterra 宣言マクロ
-#ifndef CRAFTERRA_LIBRARY
-#define CRAFTERRA_LIBRARY
-#endif
-
 // 正式バージョン数値
 #ifndef CRAFTERRA_LIBRARY_VERSION
-#define CRAFTERRA_LIBRARY_VERSION (20220114L)
+#define CRAFTERRA_LIBRARY_VERSION (20220116L)
 #endif
+
+// Crafterra 主要バージョン ( 0 がテスト版 , 1 から正式リリース版の予定 )
+#ifndef CRAFTERRA_LIBRARY_MAJOR
+#define CRAFTERRA_LIBRARY_MAJOR (0)
+#endif
+
+// Crafterra 補助バージョン
+#ifndef CRAFTERRA_LIBRARY_MINOR
+#define CRAFTERRA_LIBRARY_MINOR (1)
+#endif
+
+// Crafterra 微修正バージョン
+#ifndef CRAFTERRA_LIBRARY_PATCHLEVEL
+#define CRAFTERRA_LIBRARY_PATCHLEVEL (3)
+#endif
+
+// 正式バージョン名
+#ifndef CRAFTERRA_LIBRARY_VERSION_NAME
+#define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.3 (https://github.com/AsPJT/Crafterra)"
+#endif
+
+/*##########################################################################################
+	更新履歴
+	バージョン |     更新日    |           概要
+	5.0.0.1.X  | 2022/0X/XX | コピペ用
+	5.0.0.1.3  | 2022/01/16 | 一般公開
+	5.0.0.1.2  | 2022/01/14 | 一般公開
+	5.0.0.1.1  | 2022/01/12 | Crafterra をライブラリ化
+	5.0.0.1.0  | 2022/01/08 | Crafterra をリニューアル
+##########################################################################################*/
 
 // AsDungeon 世代 ( Crafterra 第五世代 )
 #ifndef CRAFTERRA_LIBRARY_GENERATION
 #define CRAFTERRA_LIBRARY_GENERATION (5)
 #endif
 
+// AsDungeon 世代微修正バージョン
+#ifndef CRAFTERRA_LIBRARY_GENERATION_PATCHLEVEL
+#define CRAFTERRA_LIBRARY_GENERATION_PATCHLEVEL (0)
+#endif
+
 /*##########################################################################################
 	AsDungeon 世代とは？
-	
+
 	As Project が開発する地形またはダンジョン生成システムの管理番号である。
 
 	第一世代： AsRogueLike_C (First Generation AsDungeon)
@@ -49,49 +79,16 @@
 	https://github.com/AsPJT/DungeonTemplateLibrary/wiki/Version-History
 ##########################################################################################*/
 
-// AsDungeon 世代微修正バージョン
-#ifndef CRAFTERRA_LIBRARY_GENERATION_PATCHLEVEL
-#define CRAFTERRA_LIBRARY_GENERATION_PATCHLEVEL (0)
-#endif
-
-// Crafterra 主要バージョン
-#ifndef CRAFTERRA_LIBRARY_MAJOR
-#define CRAFTERRA_LIBRARY_MAJOR (0)
-#endif
-
-// Crafterra 補助バージョン
-#ifndef CRAFTERRA_LIBRARY_MINOR
-#define CRAFTERRA_LIBRARY_MINOR (1)
-#endif
-
-// Crafterra 微修正バージョン
-#ifndef CRAFTERRA_LIBRARY_PATCHLEVEL
-#define CRAFTERRA_LIBRARY_PATCHLEVEL (2)
-#endif
-
-// 正式バージョン名
-#ifndef CRAFTERRA_LIBRARY_VERSION_NAME
-#define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.2 (https://github.com/AsPJT/Crafterra)"
-#endif
-
-/*##########################################################################################
-	更新履歴
-	バージョン |     更新日    |           概要
-	5.0.0.1.X  | 2022/0X/XX | コピペ用
-	5.0.0.1.1  | 2022/01/12 | Crafterra をライブラリ化
-	5.0.0.1.0  | 2022/01/08 | Crafterra をリニューアル
-##########################################################################################*/
-
 namespace Crafterra {
 
 	namespace Version {
-
-		constexpr long crafterra_library_version                = (CRAFTERRA_LIBRARY_VERSION);
-		constexpr int  crafterra_library_generation             = (CRAFTERRA_LIBRARY_GENERATION);
+		// using 定義
+		constexpr long crafterra_library_version = (CRAFTERRA_LIBRARY_VERSION);
+		constexpr int  crafterra_library_generation = (CRAFTERRA_LIBRARY_GENERATION);
 		constexpr int  crafterra_library_generation_patchlevel = (CRAFTERRA_LIBRARY_GENERATION_PATCHLEVEL);
-		constexpr int  crafterra_library_major                  = (CRAFTERRA_LIBRARY_MAJOR);
-		constexpr int  crafterra_library_minor                  = (CRAFTERRA_LIBRARY_MINOR);
-		constexpr int  crafterra_library_patchlevel             = (CRAFTERRA_LIBRARY_PATCHLEVEL);
+		constexpr int  crafterra_library_major = (CRAFTERRA_LIBRARY_MAJOR);
+		constexpr int  crafterra_library_minor = (CRAFTERRA_LIBRARY_MINOR);
+		constexpr int  crafterra_library_patchlevel = (CRAFTERRA_LIBRARY_PATCHLEVEL);
 
 	}
 

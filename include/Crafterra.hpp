@@ -19,8 +19,28 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_HPP
 
-// マクロ定義 重要度：高
+// Crafterra 宣言マクロ
+#ifndef CRAFTERRA_LIBRARY
+#define CRAFTERRA_LIBRARY
+#endif
+
+//##########################################################################################
+// Macro
+// マクロ定義 ( 完成 & 更新あり )
 #include <Crafterra/Basic/Version.hpp>
+//##########################################################################################
+// Data Type
+// プリミティブ型定義 ( 完成 )
+#include <Crafterra/DataType/PrimitiveDataType.hpp>
+// Crafterra 固有のプリミティブ型定義 ( 骨組みは完成 )
+#include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
+// テンプレート型 ( ほぼ完成 )
+#include <Crafterra/DataType/StringDataType.hpp>
+#include <Crafterra/DataType/ArrayDataType.hpp>
+#include <Crafterra/DataType/VectorDataType.hpp>
+//##########################################################################################
+
+#include <Crafterra/Enum/CrafterraEnum.hpp>
 
 #include <Crafterra/Basic/Size2D.hpp>
 
@@ -62,15 +82,7 @@ namespace Crafterra {
 
 	};
 
-	// キャラの向き
-	enum CameraDir : unsigned int {
-		camera_type_empty
-		, camera_type_up
-		, camera_type_down
-		, camera_type_left
-		, camera_type_right
-		, camera_type_size
-	};
+
 
 }
 
@@ -119,6 +131,8 @@ namespace Crafterra {
 #include <Crafterra/Map/MapChip.hpp>
 
 #ifdef __DXLIB
+//##########################################################################################
+// 入力系
 #include <Crafterra/ThirdParty/DxLib/DxKeyboard.hpp>
 #include <Crafterra/ThirdParty/DxLib/DxFont.hpp>
 #include <Crafterra/ThirdParty/DxLib/DxMusic.hpp>
@@ -134,6 +148,7 @@ namespace Crafterra {
 	class Font {};
 	class Music {};
 	class MapChipImage {};
+	class CharacterChipImage {};
 
 }
 

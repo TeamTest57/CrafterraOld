@@ -23,24 +23,14 @@
 
 #include <memory>
 #include <new>
-#include <array>
-
-#include <random>
-
 
 namespace Crafterra {
-
-	enum PlayerMode : unsigned int {
-		player_mode_empty
-		,player_mode_human
-		,player_mode_airship
-	};
 
 	namespace System {
 		void crafterraMain(::Crafterra::CrafterraManager& cm_) {
 
-			using CameraDirType = unsigned int;
-			CameraDirType cdt = camera_type_down;
+			using ActorDirectionType = unsigned int;
+			ActorDirectionType cdt = actor_direction_down;
 			int cd_anime = 0; // アニメーション
 
 			int time_count = 0;
@@ -52,7 +42,7 @@ namespace Crafterra {
 			CoordinateSystem cs(cm_.getWindowWidth(), cm_.getWindowHeight());
 
 
-			using FieldMapMatrix = ::std::array<::std::array<MapChip, size_x>, size_y>; // 世界
+			using FieldMapMatrix = ::Crafterra::DataType::Matrix<MapChip, size_x, size_y>; // 世界
 			using FieldMapMatrixPtr = ::std::unique_ptr<FieldMapMatrix>; // 世界
 
 			FieldMapMatrixPtr map_chip_type_biome_map_matrix_ptr(new(::std::nothrow) FieldMapMatrix); // フィールドマップのポインタ
@@ -64,7 +54,7 @@ namespace Crafterra {
 
 			InputKey key;
 
-			PlayerMode player_mode = player_mode_airship;
+			OperationActorStateInFieldMap player_mode = operation_actor_state_in_field_map_airship;
 
 			while (::Crafterra::System::Update()) {
 				++time_count;
@@ -82,19 +72,19 @@ namespace Crafterra {
 					key.setKey();
 					if (key.getKey(KEY_INPUT_A) >= 1 || key.getKey(KEY_INPUT_LEFT) >= 1) {
 						cs.camera_size.moveX(-2);
-						cdt = camera_type_left;
+						cdt = actor_direction_left;
 					}
 					if (key.getKey(KEY_INPUT_D) >= 1 || key.getKey(KEY_INPUT_RIGHT) >= 1) {
 						cs.camera_size.moveX(2);
-						cdt = camera_type_right;
+						cdt = actor_direction_right;
 					}
 					if (key.getKey(KEY_INPUT_W) >= 1 || key.getKey(KEY_INPUT_UP) >= 1) {
 						cs.camera_size.moveY(-2);
-						cdt = camera_type_up;
+						cdt = actor_direction_up;
 					}
 					if (key.getKey(KEY_INPUT_S) >= 1 || key.getKey(KEY_INPUT_DOWN) >= 1) {
 						cs.camera_size.moveY(2);
-						cdt = camera_type_down;
+						cdt = actor_direction_down;
 					}
 					if (key.getKey(KEY_INPUT_G) == 1) {
 						terrain(field_map_matrix);
@@ -122,20 +112,20 @@ namespace Crafterra {
 						cs.map_chip_size.setWidth(6.f);
 						cs.map_chip_size.setHeight(6.f);
 
-						player_mode = player_mode_airship;
+						player_mode = operation_actor_state_in_field_map_airship;
 					}
 					if (key.getDownKey(KEY_INPUT_2)) {
 
 						cs.map_chip_size.setWidth(64.f);
 						cs.map_chip_size.setHeight(64.f);
 
-						player_mode = player_mode_human;
+						player_mode = operation_actor_state_in_field_map_walking;
 					}
 				}
 				{
 					// 描画関数
 					cs.updateCamera(
-						[&](const float csx_, const float csy_, const float cw_, const float ch_, const std::size_t x_, const std::size_t y_) {
+						[&](const float csx_, const float csy_, const float cw_, const float ch_, const ::Crafterra::DataType::IndexUint x_, const ::Crafterra::DataType::IndexUint y_) {
 
 							if (field_map_matrix[y_][x_].getDrawChip() >= 0) {
 								::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
@@ -157,24 +147,24 @@ namespace Crafterra {
 				int dir = 0;
 				const int cd_anime2 = ((cd_anime == 3) ? 1 : cd_anime);
 				switch (cdt) {
-				case camera_type_down:dir = 0 + cd_anime2; break;
-				case camera_type_left:dir = 3 + cd_anime2; break;
-				case camera_type_right:dir = 6 + cd_anime2; break;
-				case camera_type_up:dir = 9 + cd_anime2; break;
+				case actor_direction_down:dir = 0 + cd_anime2; break;
+				case actor_direction_left:dir = 3 + cd_anime2; break;
+				case actor_direction_right:dir = 6 + cd_anime2; break;
+				case actor_direction_up:dir = 9 + cd_anime2; break;
 				}
 				// カメラの中心を描画
 				//::DxLib::DrawCircle(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2, cs.map_chip_size.getWidthHalf(), 0x00111111, TRUE);
 				switch (player_mode)
 				{
-				case Crafterra::player_mode_empty:
+				case Crafterra::operation_actor_state_in_field_map_empty:
 					break;
-				case Crafterra::player_mode_human:
+				case Crafterra::operation_actor_state_in_field_map_walking:
 					// 人間を描画
 					::DxLib::DrawRotaGraph(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2,
 						cs.map_chip_size.getWidthHalf() / 16, 0.0,
 						cm_.getCharacterChip().getCharacterChip(1, dir), TRUE, FALSE);
 					break;
-				case Crafterra::player_mode_airship:
+				case Crafterra::operation_actor_state_in_field_map_airship:
 					// 飛空艇の影を描画
 					::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
 					::DxLib::DrawOval(int(cs.window_size.getWidth() / 2), int(cs.window_size.getHeight() / 2 + cs.map_chip_size.getHeight() * 32),

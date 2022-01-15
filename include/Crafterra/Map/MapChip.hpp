@@ -20,14 +20,9 @@
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_MAP_MAP_CHIP_HPP
 
 #include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
 
 namespace Crafterra {
-
-	using BiomeType = unsigned int;
-	using BlockType = unsigned int;
-
-	// 標高値
-	using ElevationUint = ::std::uint_fast16_t;
 
 	// バイオームの種類
 	enum MapChipTypeBiome : BiomeType {

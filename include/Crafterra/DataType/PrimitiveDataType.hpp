@@ -126,20 +126,47 @@
 #endif // CRAFTERRA_USE_CSTDINT
 #endif // CRAFTERRA_UINT8_T
 //##########################################################################################
+// CHAR_T
+#ifndef CRAFTERRA_CHAR_T
+#define CRAFTERRA_CHAR_T char
+#endif // CRAFTERRA_CHAR_T
+//##########################################################################################
+// CHAR32_T
+#ifndef CRAFTERRA_CHAR32_T
+#define CRAFTERRA_CHAR32_T char32_t
+#endif // CRAFTERRA_CHAR32_T
+//##########################################################################################
+// CHAR16_T
+#ifndef CRAFTERRA_CHAR16_T
+#define CRAFTERRA_CHAR16_T char16_t
+#endif // CRAFTERRA_CHAR16_T
+//##########################################################################################
+// CHAR8_T ( C++20 以降の処理は今後実装 )
+#ifndef CRAFTERRA_CHAR8_T
+#define CRAFTERRA_CHAR8_T char
+#endif // CRAFTERRA_CHAR8_T
+//##########################################################################################
 // using 型定義
 namespace Crafterra {
-	// size_t
-	using IndexUint = CRAFTERRA_SIZE_T;
-	using SizeUint = CRAFTERRA_SIZE_T;
-	// int, uint
-	using Int64 = CRAFTERRA_INT64_T;
-	using Uint64 = CRAFTERRA_UINT64_T;
-	using Int32 = CRAFTERRA_INT32_T;
-	using Uint32 = CRAFTERRA_UINT32_T;
-	using Int16 = CRAFTERRA_INT16_T;
-	using Uint16 = CRAFTERRA_UINT16_T;
-	using Int8 = CRAFTERRA_INT8_T;
-	using Uint8 = CRAFTERRA_UINT8_T;
+	inline namespace DataType {
+		// size_t
+		using IndexUint = CRAFTERRA_SIZE_T;
+		using SizeUint  = CRAFTERRA_SIZE_T;
+		// int, uint
+		using Int64  = CRAFTERRA_INT64_T;
+		using Uint64 = CRAFTERRA_UINT64_T;
+		using Int32  = CRAFTERRA_INT32_T;
+		using Uint32 = CRAFTERRA_UINT32_T;
+		using Int16  = CRAFTERRA_INT16_T;
+		using Uint16 = CRAFTERRA_UINT16_T;
+		using Int8   = CRAFTERRA_INT8_T;
+		using Uint8  = CRAFTERRA_UINT8_T;
+		// char
+		using Char   = CRAFTERRA_CHAR_T;
+		using Char32 = CRAFTERRA_CHAR32_T;
+		using Char16 = CRAFTERRA_CHAR16_T;
+		using Char8  = CRAFTERRA_CHAR8_T;
+	}
 }
 //##########################################################################################
 

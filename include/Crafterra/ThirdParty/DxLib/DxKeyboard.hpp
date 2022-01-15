@@ -19,7 +19,7 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_THIRD_PARTY_DXLIB_KEYBOARD_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_THIRD_PARTY_DXLIB_KEYBOARD_HPP
 
-#include <cstddef>
+#include <Crafterra/DataType/PrimitiveDataType.hpp>
 
 namespace Crafterra {
 
@@ -51,13 +51,13 @@ namespace Crafterra {
 		}
 
 		// キー出力
-		int getKey(const ::std::size_t key_num_) const {
+		int getKey(const ::Crafterra::DataType::IndexUint key_num_) const {
 			return this->key[key_num_];
 		}
-		int getUpKey(const ::std::size_t key_num_) const {
+		bool getUpKey(const ::Crafterra::DataType::IndexUint key_num_) const {
 			return this->up_key[key_num_];
 		}
-		int getDownKey(const ::std::size_t key_num_) const {
+		bool getDownKey(const ::Crafterra::DataType::IndexUint key_num_) const {
 			return this->down_key[key_num_];
 		}
 

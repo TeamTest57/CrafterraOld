@@ -19,15 +19,11 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_THIRD_PARTY_DXLIB_DXMUSIC_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_THIRD_PARTY_DXLIB_DXMUSIC_HPP
 
-#include <cstddef>
-
 namespace Crafterra {
 
 	class Music {
 	private:
 
-		LPCSTR music_path{};
-		bool is_music = false;
 		int m_music = -1;
 
 	public:

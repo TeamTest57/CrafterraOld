@@ -19,9 +19,10 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_INIT_READ_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_INIT_READ_HPP
 
-#include <string>
 #include <fstream>
 #include <sstream>
+
+#include <Crafterra/DataType/StringDataType.hpp>
 
 namespace Crafterra {
 
@@ -34,7 +35,7 @@ namespace Crafterra {
 		int window_width = ::Crafterra::System::init_window_width;
 		int window_height = ::Crafterra::System::init_window_height;
 
-		int getNum(const std::string& str_) const {
+		int getNum(const ::Crafterra::DataType::String& str_) const {
 			int num = 0;
 			for (auto& s : str_) {
 				switch (s) {
@@ -54,16 +55,16 @@ namespace Crafterra {
 			return num;
 		}
 
-		void setBool(bool& flag_, const std::string& label_buf_, const std::string& label_) {
+		void setBool(bool& flag_, const ::Crafterra::DataType::String& label_buf_, const ::Crafterra::DataType::String& label_) {
 			if (flag_) {
 				flag_ = false;
-				is_fullscreen = (label_buf_ == std::string("ON") || label_buf_ == std::string("on"));
+				is_fullscreen = (label_buf_ == ::Crafterra::DataType::String("ON") || label_buf_ == ::Crafterra::DataType::String("on"));
 			}
 			// フルスクリーンフラグ
 			else flag_ = (label_buf_ == label_);
 		}
 
-		void setInt(bool& flag_, int& value_, const std::string& label_buf_, const std::string& label_) {
+		void setInt(bool& flag_, int& value_, const ::Crafterra::DataType::String& label_buf_, const ::Crafterra::DataType::String& label_) {
 			if (flag_) {
 				flag_ = false;
 				value_ = getNum(label_buf_);
@@ -77,8 +78,8 @@ namespace Crafterra {
 
 
 
-		InitRead(const std::string& path_) {
-			std::string str_buf{}, str_conma_buf{}, input_csv_file_path = path_;
+		InitRead(const ::Crafterra::DataType::String& path_) {
+			::Crafterra::DataType::String str_buf{}, str_conma_buf{}, input_csv_file_path = path_;
 			std::ifstream ifs(input_csv_file_path);
 			if (!ifs) return;
 

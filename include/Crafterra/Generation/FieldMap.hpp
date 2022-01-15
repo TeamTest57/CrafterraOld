@@ -19,10 +19,11 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_GENERATION_FIELD_MAP_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_GENERATION_FIELD_MAP_HPP
 
-#include <array>
+#include <Crafterra/DataType/ArrayDataType.hpp>
 #include <Crafterra/Map/MapChip.hpp>
 
 #include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
 
 #include <memory>
 #include <new>
@@ -34,7 +35,7 @@
 namespace Crafterra {
 
 	// フィールドマップを生成
-	void terrain(::std::array<::std::array<MapChip, size_x>, size_y>& field_map_matrix) {
+	void terrain(::Crafterra::DataType::Matrix<MapChip, size_x, size_y>& field_map_matrix) {
 		using shape_t = ElevationUint;
 
 		//温度
@@ -56,8 +57,8 @@ namespace Crafterra {
 		//std::unique_ptr<shape_t[][size_x] > biome(new(std::nothrow) shape_t[size_y][size_x]);
 
 		//バイオームの分類分け
-		for (std::size_t row{}; row < size_y; ++row)
-			for (std::size_t col{}; col < size_x; ++col) {
+		for (::Crafterra::DataType::IndexUint row{}; row < size_y; ++row)
+			for (::Crafterra::DataType::IndexUint col{}; col < size_x; ++col) {
 
 				temperature[row][col] -= elevation[row][col] / 2;
 				land[row][col] = 1;
@@ -92,8 +93,8 @@ namespace Crafterra {
 		//	dtl::base::MatrixRange(7, 7, 2, 2),
 		//	dtl::base::MatrixRange(7, 7, 4, 4)).draw(biome, size_x, size_y);
 
-		for (std::size_t row{}; row < size_y; ++row)
-			for (std::size_t col{}; col < size_x; ++col) {
+		for (::Crafterra::DataType::IndexUint row{}; row < size_y; ++row)
+			for (::Crafterra::DataType::IndexUint col{}; col < size_x; ++col) {
 				if (elevation[row][col] < 110 && land[row][col] == 0) field_map_matrix[row][col].setBiome(map_chip_type_biome_lake);
 
 				field_map_matrix[row][col].setElevation(elevation[row][col]);
@@ -147,11 +148,11 @@ namespace Crafterra {
 
 			}
 
-		for (std::size_t col{ 1 }; col < size_x - 1; ++col)
-			for (std::size_t row{ 1 }; row < size_y - 1; ++row) {
+		for (::Crafterra::DataType::IndexUint col{ 1 }; col < size_x - 1; ++col)
+			for (::Crafterra::DataType::IndexUint row{ 1 }; row < size_y - 1; ++row) {
 
-				// for (std::size_t row2{ row + 1 }, count = 1; row2 < size_y; ++row2, ++count) {
-				for (std::size_t row2{ size_y - 1 - 1 }, count = size_y - row - 1; row2 > 0; --row2, --count) {
+				// for (::Crafterra::DataType::IndexUint row2{ row + 1 }, count = 1; row2 < size_y; ++row2, ++count) {
+				for (::Crafterra::DataType::IndexUint row2{ size_y - 1 - 1 }, count = size_y - row - 1; row2 > 0; --row2, --count) {
 					if (field_map_matrix[row2][col].getElevation2() >= count) {
 
 						// 下が崖の場合
