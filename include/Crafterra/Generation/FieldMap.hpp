@@ -1,12 +1,20 @@
-﻿/*#######################################################################################
+﻿/*##########################################################################################
+
 	Crafterra Library 🌏
-	Copyright (c) 2017-2022 Kasugaccho
-	Copyright (c) 2018-2022 As Project
-	https://github.com/AsPJT/Crafterra
+
+	[Planning and Production]
+	2017-2022 Kasugaccho
+	2018-2022 As Project
+
+	[Contact Us]
 	wanotaitei@gmail.com
-	Distributed under the CC0 1.0. (See accompanying
-	file LICENSE_for_include_directory.txt or copy at https://creativecommons.org/publicdomain/zero/1.0/)
-#######################################################################################*/
+	https://github.com/AsPJT/Crafterra
+
+	[License]
+	Distributed under the CC0 1.0.
+	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
 
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_GENERATION_FIELD_MAP_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_GENERATION_FIELD_MAP_HPP
@@ -14,7 +22,7 @@
 #include <array>
 #include <Crafterra/Map/MapChip.hpp>
 
-#include <Crafterra/Basic/Type.hpp>
+#include <Crafterra/DataType/PrimitiveDataType.hpp>
 
 #include <memory>
 #include <new>
@@ -158,6 +166,8 @@ namespace Crafterra {
 							// 実験
 							// field_map_matrix[row][col].setDrawChip(field_map_matrix[row2][col].getElevation()/8);
 						}
+						// 実験
+						//field_map_matrix[row][col].setElevation(field_map_matrix[row2][col].getElevation());
 						break;
 					}
 				}

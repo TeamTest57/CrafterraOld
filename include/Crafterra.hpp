@@ -1,12 +1,20 @@
-﻿/*#######################################################################################
+﻿/*##########################################################################################
+
 	Crafterra Library 🌏
-	Copyright (c) 2017-2022 Kasugaccho
-	Copyright (c) 2018-2022 As Project
-	https://github.com/AsPJT/Crafterra
+
+	[Planning and Production]
+	2017-2022 Kasugaccho
+	2018-2022 As Project
+
+	[Contact Us]
 	wanotaitei@gmail.com
-	Distributed under the Boost Software License, Version 1.0. (See accompanying
-	file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-#######################################################################################*/
+	https://github.com/AsPJT/Crafterra
+
+	[License]
+	Distributed under the CC0 1.0.
+	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
 
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_HPP
@@ -77,7 +85,7 @@ namespace Crafterra {
 }
 #endif // CRAFTERRA_MAIN_FUNCTION
 
-#include <Crafterra/Basic/Type.hpp>
+#include <Crafterra/DataType/PrimitiveDataType.hpp>
 
 namespace Crafterra {
 	namespace System {

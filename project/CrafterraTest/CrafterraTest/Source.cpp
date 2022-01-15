@@ -1,12 +1,20 @@
-﻿/*#######################################################################################
+﻿/*##########################################################################################
+
 	Crafterra Sample Source Code 🌏
-	Copyright (c) 2017-2022 Kasugaccho
-	Copyright (c) 2018-2022 As Project
-	https://github.com/AsPJT/Crafterra
+
+	[Planning and Production]
+	2017-2022 Kasugaccho
+	2018-2022 As Project
+
+	[Contact Us]
 	wanotaitei@gmail.com
-	Distributed under the CC0 1.0. (See accompanying
-	file LICENSE_for_include_directory.txt or copy at https://creativecommons.org/publicdomain/zero/1.0/)
-#######################################################################################*/
+	https://github.com/AsPJT/Crafterra
+
+	[License]
+	Distributed under the CC0 1.0.
+	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
 
 #include <DxLib.h>
 
@@ -135,6 +143,13 @@ namespace Crafterra {
 							}
 							else ::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), field_map_matrix[y_][x_].getColor(), TRUE);
 							
+							//::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+							//::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), GetColor(
+							//	(field_map_matrix[y_][x_].getElevation()>=255)?0: 255-field_map_matrix[y_][x_].getElevation(),
+							//	(field_map_matrix[y_][x_].getElevation()>=255)?0: 255-field_map_matrix[y_][x_].getElevation(),
+							//	(field_map_matrix[y_][x_].getElevation()>=255)?0: 255-field_map_matrix[y_][x_].getElevation()
+							//), TRUE);
+							//::DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 						}
 					);
 				}
@@ -176,9 +191,12 @@ namespace Crafterra {
 				}
 
 				// 座標を文字として出力
-				DrawFormatStringToHandle(10, 200, GetColor(255, 255, 255), cm_.getFont().getFont(),
-					"X: %.2f\nY: %.2f", cs.camera_size.getCenterX(), cs.camera_size.getCenterY());
-
+				DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), cm_.getFont().getFont(),
+					"Camera Center X: %.2f Y: %.2f\nCamera Start X: %.2f Y: %.2f"
+					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
+					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
+				);
+				//WaitKey();
 			}
 
 		}

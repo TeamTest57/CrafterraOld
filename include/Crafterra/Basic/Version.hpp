@@ -1,12 +1,20 @@
-﻿/*#######################################################################################
+﻿/*##########################################################################################
+
 	Crafterra Library 🌏
-	Copyright (c) 2017-2022 Kasugaccho
-	Copyright (c) 2018-2022 As Project
-	https://github.com/AsPJT/Crafterra
+
+	[Planning and Production]
+	2017-2022 Kasugaccho
+	2018-2022 As Project
+
+	[Contact Us]
 	wanotaitei@gmail.com
-	Distributed under the CC0 1.0. (See accompanying
-	file LICENSE_for_include_directory.txt or copy at https://creativecommons.org/publicdomain/zero/1.0/)
-#######################################################################################*/
+	https://github.com/AsPJT/Crafterra
+
+	[License]
+	Distributed under the CC0 1.0.
+	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
 
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_VERSION_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_BASIC_VERSION_HPP
@@ -26,7 +34,7 @@
 #define CRAFTERRA_LIBRARY_GENERATION (5)
 #endif
 
-/*#######################################################################################
+/*##########################################################################################
 	AsDungeon 世代とは？
 	
 	As Project が開発する地形またはダンジョン生成システムの管理番号である。
@@ -39,7 +47,7 @@
 
 	詳しくはこちら
 	https://github.com/AsPJT/DungeonTemplateLibrary/wiki/Version-History
-#######################################################################################*/
+##########################################################################################*/
 
 // AsDungeon 世代微修正バージョン
 #ifndef CRAFTERRA_LIBRARY_GENERATION_PATCHLEVEL
@@ -66,13 +74,13 @@
 #define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.2 (https://github.com/AsPJT/Crafterra)"
 #endif
 
-/*#######################################################################################
+/*##########################################################################################
 	更新履歴
 	バージョン |     更新日    |           概要
 	5.0.0.1.X  | 2022/0X/XX | コピペ用
 	5.0.0.1.1  | 2022/01/12 | Crafterra をライブラリ化
 	5.0.0.1.0  | 2022/01/08 | Crafterra をリニューアル
-#######################################################################################*/
+##########################################################################################*/
 
 namespace Crafterra {
 
