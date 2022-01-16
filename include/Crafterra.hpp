@@ -41,49 +41,9 @@
 #include <Crafterra/Enum/CrafterraEnum.hpp>
 
 #include <Crafterra/Basic/Size2D.hpp>
+#include <Crafterra/Basic/ElapsedTime.hpp>
 
-namespace Crafterra {
-
-	class Font;
-	class Music;
-	class MapChipImage;
-	class CharacterChipImage;
-
-	class Resource {
-
-		// 各種素材のポインタ
-	private:
-		Font* font = nullptr;
-		Music* music = nullptr;
-		MapChipImage* map_chip = nullptr;
-		CharacterChipImage* character_chip = nullptr;
-
-	public:
-		void setFont(Font& font_) { this->font = &font_; }
-		Font& getFont() { return *(this->font); }
-		void setMusic(Music& music_) { this->music = &music_; }
-		Music& getMusic() { return *(this->music); }
-		void setMapChip(MapChipImage& map_chip_) { this->map_chip = &map_chip_; }
-		MapChipImage& getMapChip() { return *(this->map_chip); }
-		void setCharacterChip(CharacterChipImage& character_chip_) { this->character_chip = &character_chip_; }
-		CharacterChipImage& getCharacterChip() { return *(this->character_chip); }
-
-	private:
-		int window_width = 0;
-		int window_height = 0;
-
-	public:
-		void setWindowWidth(const int window_width_) { this->window_width = window_width_; }
-		void setWindowHeight(const int window_height_) { this->window_height = window_height_; }
-		int getWindowWidth() const { return this->window_width; }
-		int getWindowHeight() const { return this->window_height; }
-
-	};
-
-
-
-}
-
+#include <Crafterra/Basic/Resource.hpp>
 
 // Crafterra のメイン関数を宣言
 #ifndef CRAFTERRA_MAIN_FUNCTION
@@ -100,22 +60,17 @@ namespace Crafterra {
 namespace Crafterra {
 	namespace System {
 		// 初期のウィンドウの幅
-		constexpr int init_window_width = 1280;
+		constexpr ::Crafterra::DataType::IndexUint init_window_width = 1280;
 		// 初期のウィンドウの高さ
-		constexpr int init_window_height = 720;
+		constexpr ::Crafterra::DataType::IndexUint init_window_height = 720;
 	}
-
 	// マップサイズ
-	constexpr ::Crafterra::DataType::IndexUint size_x = 512;
-	constexpr ::Crafterra::DataType::IndexUint size_y = 512;
-
+	constexpr ::Crafterra::DataType::IndexUint init_field_map_width = 512;
+	constexpr ::Crafterra::DataType::IndexUint init_field_map_height = 512;
 }
-
-
 
 // 初回読み込み
 #include <Crafterra/Basic/InitRead.hpp>
-
 
 namespace Crafterra {
 	namespace Color {
@@ -130,6 +85,7 @@ namespace Crafterra {
 
 //##########################################################################################
 #ifdef CRAFTERRA_USE_DXLIB
+#include <Crafterra/ThirdParty/DxLib/DxDataType.hpp>
 // 入力系
 #include <Crafterra/ThirdParty/DxLib/DxKeyboard.hpp>
 #include <Crafterra/ThirdParty/DxLib/DxFont.hpp>
@@ -141,13 +97,11 @@ namespace Crafterra {
 #include <Crafterra/ThirdParty/DxLib/CrafterraForDxLib.hpp>
 
 #else
-
 namespace Crafterra {
 	class Font {};
 	class Music {};
 	class MapChipImage {};
 	class CharacterChipImage {};
-
 }
 
 #endif // CRAFTERRA_USE_DXLIB

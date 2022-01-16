@@ -22,12 +22,13 @@
 #include <Crafterra.hpp>
 
 #include <memory>
-#include <new>
+
+#include <chrono>
 
 namespace Crafterra {
 
 	namespace System {
-		void crafterraMain(::Crafterra::Resource& cm_) {
+		void crafterraMain(::Crafterra::Resource& resource_) {
 
 			ActorDirection cdt = ::Crafterra::Enum::actor_direction_down;
 			int cd_anime = 0; // アニメーション
@@ -35,13 +36,13 @@ namespace Crafterra {
 			int time_count = 0;
 			const int time_count_max = 5;
 
-			::DxLib::PlaySoundMem(cm_.getMusic().getMusic(), DX_PLAYTYPE_LOOP, TRUE);
+			::DxLib::PlaySoundMem(resource_.getMusic().getMusic(), DX_PLAYTYPE_LOOP, TRUE);
 
 
-			CoordinateSystem cs(cm_.getWindowWidth(), cm_.getWindowHeight());
+			CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight());
 
 
-			using FieldMapMatrix = ::Crafterra::DataType::Matrix<MapChip, size_x, size_y>; // 世界
+			using FieldMapMatrix = ::Crafterra::DataType::Matrix<MapChip, init_field_map_width, init_field_map_height>; // 世界
 			using FieldMapMatrixPtr = ::std::unique_ptr<FieldMapMatrix>; // 世界
 
 			FieldMapMatrixPtr map_chip_type_biome_map_matrix_ptr(CRAFTERRA_NEW FieldMapMatrix); // フィールドマップのポインタ
@@ -55,7 +56,15 @@ namespace Crafterra {
 
 			OperationActorStateInFieldMap operation_actor_state_in_field = operation_actor_state_in_field_map_airship;
 
+			ElapsedTime elapsed_time;
+
 			while (::Crafterra::System::Update()) {
+				elapsed_time.update();
+				const Int64 elapsed = elapsed_time.getMicroseconds();
+
+				clsDx();
+				printfDx("%d micro sec/f\n", int(elapsed));
+
 				++time_count;
 				if (time_count >= time_count_max) {
 					time_count = 0;
@@ -65,25 +74,41 @@ namespace Crafterra {
 						cd_anime = 0;
 					}
 				}
+				float key_displacement = 0.f;
+				// フィールドマップにおける操作アクタの状態
+				switch (operation_actor_state_in_field) {
+
+					//----------------------------------------------------------------------------------------------------
+					// 🚶 人間 ( 陸を歩行する者 ) 🚶 
+				case ::Crafterra::Enum::operation_actor_state_in_field_map_walking:
+					key_displacement = 0.2f;
+					break;
+
+					//----------------------------------------------------------------------------------------------------
+					// 🛸 飛空艇 ( 空を飛んでいる者 ) 🛸 
+				case ::Crafterra::Enum::operation_actor_state_in_field_map_airship:
+					key_displacement = 2.f;
+					break;
+				}
 
 				// キー関連
 				{
 					key.setKey();
 					{
 						if (key.getKey(KEY_INPUT_A) >= 1 || key.getKey(KEY_INPUT_LEFT) >= 1) {
-							cs.camera_size.moveX(-2);
+							cs.camera_size.moveX(-key_displacement);
 							cdt = ::Crafterra::Enum::actor_direction_left;
 						}
 						if (key.getKey(KEY_INPUT_D) >= 1 || key.getKey(KEY_INPUT_RIGHT) >= 1) {
-							cs.camera_size.moveX(2);
+							cs.camera_size.moveX(key_displacement);
 							cdt = ::Crafterra::Enum::actor_direction_right;
 						}
 						if (key.getKey(KEY_INPUT_W) >= 1 || key.getKey(KEY_INPUT_UP) >= 1) {
-							cs.camera_size.moveY(-2);
+							cs.camera_size.moveY(-key_displacement);
 							cdt = ::Crafterra::Enum::actor_direction_up;
 						}
 						if (key.getKey(KEY_INPUT_S) >= 1 || key.getKey(KEY_INPUT_DOWN) >= 1) {
-							cs.camera_size.moveY(2);
+							cs.camera_size.moveY(key_displacement);
 							cdt = ::Crafterra::Enum::actor_direction_down;
 						}
 					}
@@ -91,8 +116,8 @@ namespace Crafterra {
 						terrain(field_map_matrix);
 					}
 					if (key.getKey(KEY_INPUT_J) >= 1) {
-						cs.map_chip_size.setWidth(cs.map_chip_size.getWidth() * 0.995f);
-						cs.map_chip_size.setHeight(cs.map_chip_size.getHeight() * 0.995f);
+						cs.setMapChipWidth(cs.map_chip_size.getWidth() * 0.995f);
+						cs.setMapChipHeight(cs.map_chip_size.getHeight() * 0.995f);
 
 						const float re_init_csx = float(cs.window_size.getWidth()) / cs.map_chip_size.getWidth();
 						const float re_init_csy = float(cs.window_size.getHeight()) / cs.map_chip_size.getHeight();
@@ -100,8 +125,8 @@ namespace Crafterra {
 						cs.camera_size.setHeight(re_init_csy);
 					}
 					if (key.getKey(KEY_INPUT_K) >= 1) {
-						cs.map_chip_size.setWidth(cs.map_chip_size.getWidth() * 1.005f);
-						cs.map_chip_size.setHeight(cs.map_chip_size.getHeight() * 1.005f);
+						cs.setMapChipWidth(cs.map_chip_size.getWidth() * 1.005f);
+						cs.setMapChipHeight(cs.map_chip_size.getHeight() * 1.005f);
 
 						const float re_init_csx = float(cs.window_size.getWidth()) / cs.map_chip_size.getWidth();
 						const float re_init_csy = float(cs.window_size.getHeight()) / cs.map_chip_size.getHeight();
@@ -110,15 +135,13 @@ namespace Crafterra {
 					}
 					if (key.getDownKey(KEY_INPUT_1)) {
 
-						cs.map_chip_size.setWidth(6.f);
-						cs.map_chip_size.setHeight(6.f);
+						cs.setMapChipSize(6.f);
 
 						operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_airship;
 					}
 					if (key.getDownKey(KEY_INPUT_2)) {
 
-						cs.map_chip_size.setWidth(64.f);
-						cs.map_chip_size.setHeight(64.f);
+						cs.setMapChipSize(64.f);
 
 						operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_walking;
 					}
@@ -130,9 +153,10 @@ namespace Crafterra {
 
 							if (field_map_matrix[y_][x_].getDrawChip() >= 0) {
 								::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
-									cm_.getMapChip().getMapChip(field_map_matrix[y_][x_].getDrawChip()), TRUE);
+									resource_.getMapChip().getMapChip(field_map_matrix[y_][x_].getDrawChip()), TRUE);
 							}
-							else ::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), field_map_matrix[y_][x_].getColor(), TRUE);
+							else 
+								::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), field_map_matrix[y_][x_].getColor(), TRUE);
 						}
 					);
 				}
@@ -158,7 +182,7 @@ namespace Crafterra {
 
 					::DxLib::DrawRotaGraph(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2,
 						cs.map_chip_size.getWidthHalf() / 16, 0.0,
-						cm_.getCharacterChip().getCharacterChip(1, dir), TRUE, FALSE);
+						resource_.getCharacterChip().getCharacterChip(1, dir), TRUE, FALSE);
 					break;
 
 					//----------------------------------------------------------------------------------------------------
@@ -178,7 +202,7 @@ namespace Crafterra {
 					// 飛空艇を描画
 					::DxLib::DrawRotaGraph(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2,
 						cs.map_chip_size.getWidthHalf(), 0.0,
-						cm_.getCharacterChip().getCharacterChip(0, dir), TRUE, FALSE);
+						resource_.getCharacterChip().getCharacterChip(0, dir), TRUE, FALSE);
 					break;
 
 				default:
@@ -187,12 +211,13 @@ namespace Crafterra {
 				//----------------------------------------------------------------------------------------------------
 
 				// 座標を文字として出力
-				//DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), cm_.getFont().getFont(),
-				//	"Camera Center X: %.2f Y: %.2f\nCamera Start X: %.2f Y: %.2f"
-				//	, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
-				//	, cs.camera_size.getStartX(), cs.camera_size.getStartY()
-				//);
-				//WaitKey();
+				//DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), resource_.getFont().getFont(),
+				DrawBox(0, 0, 200, 180, 0x44444444, TRUE);
+				printfDx(
+					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける"
+					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
+					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
+				);
 			}
 
 		}

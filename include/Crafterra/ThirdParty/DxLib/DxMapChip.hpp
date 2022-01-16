@@ -19,28 +19,29 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_THIRD_PARTY_DXLIB_DXMAPCHIP_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_THIRD_PARTY_DXLIB_DXMAPCHIP_HPP
 
-#include <cstddef>
+#include <Crafterra/DataType/PrimitiveDataType.hpp>
+#include <Crafterra/ThirdParty/DxLib/DxDataType.hpp>
 
 namespace Crafterra {
 
 	class MapChipImage {
 	private:
 
-		int base_map[8 * 249]{};
+		DxGraphArray<8 * 249> base_map{};
 
 	public:
 
 		MapChipImage() {
 			::DxLib::LoadDivGraph("./../../../resource/Picture/Chip/Map/Base(pipo).png", 8 * 249,
 				8, 249,
-				32, 32, base_map);
+				32, 32, base_map.getPtr());
 		}
 
 		~MapChipImage() {
 
 		}
 
-		int getMapChip(const int i) const { return this->base_map[i]; }
+		DxGraphInt getMapChip(const IndexUint index_) const { return this->base_map.get(index_); }
 
 	};
 }

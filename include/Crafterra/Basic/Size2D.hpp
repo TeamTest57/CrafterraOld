@@ -93,6 +93,10 @@ namespace Crafterra {
 			this->start_y = (this->center_y - this->height_half);
 			this->end_y = (this->center_y + this->height_half);
 		}
+		void setSize(const SizeType value_) {
+			this->setWidth(value_);
+			this->setHeight(value_);
+		}
 		void setWidthHalf(const SizeType value_) { this->setWidth(value_ * 2); }
 		void setHeightHalf(const SizeType value_) { this->setHeight(value_ * 2); }
 	};

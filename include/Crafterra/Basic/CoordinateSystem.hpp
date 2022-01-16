@@ -37,21 +37,41 @@ namespace Crafterra {
 		UintSize2D window_size;
 		// フィールドマップの大きさ
 		UintSize2D field_map_size;
+	// private:
 		// マップチップの大きさ
 		FloatSize2D map_chip_size;
+	public:
 		// カメラの大きさ
 		FloatSize2D camera_size;
 		// マップグリッドの大きさ
 		UintSize2D map_grid_size;
+	public:
+		void setMapChipWidth(const cs_f32 width_) {
+			this->map_chip_size.setWidth(width_);
+			this->camera_size.setWidth(cs_f32(this->window_size.getWidth()) / this->map_chip_size.getWidth());
+		}
+		void setMapChipHeight(const cs_f32 height_) {
+			this->map_chip_size.setHeight(height_);
+			this->camera_size.setHeight(cs_f32(this->window_size.getHeight()) / this->map_chip_size.getHeight());
+		}
+		void setMapChipSize(const cs_f32 size_) {
+			this->setMapChipWidth(size_);
+			this->setMapChipHeight(size_);
+		}
+		void setMapChipSize(const cs_f32 width_, const cs_f32 height_) {
+			this->setMapChipWidth(width_);
+			this->setMapChipHeight(height_);
+		}
 
-		CoordinateSystem(const int ww_, const int wh_) :
+		CoordinateSystem(const cs_uint ww_, const cs_uint wh_) :
 			window_size(ww_, wh_)
-			, field_map_size(size_x, size_y)
+			, field_map_size(init_field_map_width, init_field_map_height)
 			, map_chip_size(4.f, 4.f)
 			, camera_size(
-				field_map_size.getCenterX() - (cs_f32(window_size.getWidth()) / map_chip_size.getWidth()) / 2,
-				field_map_size.getCenterY() - (cs_f32(window_size.getHeight()) / map_chip_size.getHeight()) / 2,
-				(cs_f32(window_size.getWidth()) / map_chip_size.getWidth()), (cs_f32(window_size.getHeight()) / map_chip_size.getHeight()))
+				field_map_size.getCenterX() - (cs_f32(window_size.getWidth()) / map_chip_size.getWidth()) / 2, // StartX
+				field_map_size.getCenterY() - (cs_f32(window_size.getHeight()) / map_chip_size.getHeight()) / 2, // StartY
+				(cs_f32(window_size.getWidth()) / map_chip_size.getWidth()), // Width
+				(cs_f32(window_size.getHeight()) / map_chip_size.getHeight())) // Height
 			, map_grid_size(1, 1)
 		{
 		}

@@ -95,14 +95,4 @@ namespace Crafterra {
 }
 #endif // CRAFTERRA_FOR_DXLIB_UPDATE_FUNCTION
 
-
-namespace Crafterra {
-
-
-}
-
-#define CRFTRDX_DRAW_RECT_F32_POS_UINT_COLOR ([](const float csx_,const float csy_,const float cw_,const float ch_,const unsigned int color_){::DxLib::DrawBox(int(csx_+0.5f),int(csy_+0.5f),int(csx_+cw_+0.5f),int(csy_+ch_+0.5f),color_,TRUE);})
-#define CRFTRDX_DRAW_RECT_F64_POS_UINT_COLOR ([](const double csx_,const double csy_,const double cw_,const double ch_,const unsigned int color_){::DxLib::DrawBox(int(csx_+0.5),int(csy_+0.5),int(csx_+cw_+0.5),int(csy_+ch_+0.5),color_,TRUE);})
-#define CRFTRDX_DRAW_RECT_INT_POS_UINT_COLOR ([](const int csx_,const int csy_,const int cw_,const int ch_,const unsigned int color_){::DxLib::DrawBox(csx_,csy_,csx_+cw_,csy_+ch_,color_,TRUE);})
-
 #endif //Included Crafterra Library
