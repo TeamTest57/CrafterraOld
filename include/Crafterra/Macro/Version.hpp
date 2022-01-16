@@ -39,9 +39,9 @@
 #define CRAFTERRA_LIBRARY_PATCHLEVEL (3)
 #endif
 
-// 正式バージョン名
+// 正式バージョン名 ( https://github.com/AsPJT/Crafterra )
 #ifndef CRAFTERRA_LIBRARY_VERSION_NAME
-#define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.3 (https://github.com/AsPJT/Crafterra)"
+#define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.3"
 #endif
 
 /*##########################################################################################

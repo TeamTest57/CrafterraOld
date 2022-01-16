@@ -19,15 +19,13 @@
 #ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_HPP
 #define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_HPP
 
-// Crafterra 宣言マクロ
-#ifndef CRAFTERRA_LIBRARY
-#define CRAFTERRA_LIBRARY
-#endif
-
 //##########################################################################################
 // Macro
 // マクロ定義 ( 完成 & 更新あり )
-#include <Crafterra/Basic/Version.hpp>
+#include <Crafterra/Macro/Library.hpp>
+#include <Crafterra/Macro/Version.hpp>
+#include <Crafterra/Macro/ThirdParty.hpp>
+#include <Crafterra/Macro/New.hpp>
 //##########################################################################################
 // Data Type
 // プリミティブ型定義 ( 完成 )
@@ -51,7 +49,7 @@ namespace Crafterra {
 	class MapChipImage;
 	class CharacterChipImage;
 
-	class CrafterraManager {
+	class Resource {
 
 		// 各種素材のポインタ
 	private:
@@ -61,13 +59,13 @@ namespace Crafterra {
 		CharacterChipImage* character_chip = nullptr;
 
 	public:
-		void setFont(Font* font_) { this->font = font_; }
+		void setFont(Font& font_) { this->font = &font_; }
 		Font& getFont() { return *(this->font); }
-		void setMusic(Music* music_) { this->music = music_; }
+		void setMusic(Music& music_) { this->music = &music_; }
 		Music& getMusic() { return *(this->music); }
-		void setMapChip(MapChipImage* map_chip_) { this->map_chip = map_chip_; }
+		void setMapChip(MapChipImage& map_chip_) { this->map_chip = &map_chip_; }
 		MapChipImage& getMapChip() { return *(this->map_chip); }
-		void setCharacterChip(CharacterChipImage* character_chip_) { this->character_chip = character_chip_; }
+		void setCharacterChip(CharacterChipImage& character_chip_) { this->character_chip = &character_chip_; }
 		CharacterChipImage& getCharacterChip() { return *(this->character_chip); }
 
 	private:
@@ -92,7 +90,7 @@ namespace Crafterra {
 #define CRAFTERRA_MAIN_FUNCTION
 namespace Crafterra {
 	namespace System {
-		void crafterraMain(::Crafterra::CrafterraManager&);
+		void crafterraMain(::Crafterra::Resource&);
 	}
 }
 #endif // CRAFTERRA_MAIN_FUNCTION
@@ -130,8 +128,8 @@ namespace Crafterra {
 
 #include <Crafterra/Map/MapChip.hpp>
 
-#ifdef __DXLIB
 //##########################################################################################
+#ifdef CRAFTERRA_USE_DXLIB
 // 入力系
 #include <Crafterra/ThirdParty/DxLib/DxKeyboard.hpp>
 #include <Crafterra/ThirdParty/DxLib/DxFont.hpp>
@@ -152,7 +150,8 @@ namespace Crafterra {
 
 }
 
-#endif
+#endif // CRAFTERRA_USE_DXLIB
+//##########################################################################################
 
 #include <Crafterra/Generation/FieldMap.hpp>
 

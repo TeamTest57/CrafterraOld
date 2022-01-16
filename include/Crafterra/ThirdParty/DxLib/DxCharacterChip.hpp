@@ -43,13 +43,13 @@ namespace Crafterra {
 		int start_index = 0;
 		//int player_index = 0;
 
-		void add(const int move_num_, const int animation_num_, const std::string& file_name_) {
+		void add(const int move_num_, const int animation_num_, const ::std::string& file_name_) {
 			const int all_num = move_num_ * animation_num_;
-			character_chip.resize(character_chip.size() + all_num);
+			this->character_chip.resize(this->character_chip.size() + all_num);
 			::DxLib::LoadDivGraph(file_name_.c_str(),
-				all_num, animation_num_, move_num_, 32, 32, &character_chip[start_index]);
+				all_num, animation_num_, move_num_, 32, 32, &(this->character_chip[start_index]));
 			// そのキャラの開始インデックスを格納
-			character_start_index_chip.emplace_back(start_index);
+			this->character_start_index_chip.emplace_back(start_index);
 			start_index += all_num;
 		}
 
@@ -64,8 +64,8 @@ namespace Crafterra {
 
 		}
 
-		int getCharacterChip(const int character_id, const int index) const {
-			return this->character_chip[this->character_start_index_chip[character_id] + index];
+		int getCharacterChip(const int character_id_, const int index_) const {
+			return this->character_chip[this->character_start_index_chip[character_id_] + index_];
 		}
 
 	};

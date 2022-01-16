@@ -26,7 +26,7 @@
 #include <Crafterra/DataType/CrafterraPrimitiveDataType.hpp>
 
 #include <memory>
-#include <new>
+#include <Crafterra/Macro/New.hpp> // CRAFTERRA_NEW
 
 
 // 地形生成用 ( 後に削除予定 )
@@ -39,19 +39,19 @@ namespace Crafterra {
 		using shape_t = ElevationUint;
 
 		//温度
-		std::unique_ptr<shape_t[][size_x] > temperature(new(std::nothrow) shape_t[size_y][size_x]);
+		std::unique_ptr<shape_t[][size_x] > temperature(CRAFTERRA_NEW shape_t[size_y][size_x]);
 		dtl::shape::PerlinIsland<shape_t>(12.0, 6, 240, 100).draw(temperature, size_x, size_y);
 
 		//降水量
-		std::unique_ptr<shape_t[][size_x] > amount_of_rainfall(new(std::nothrow) shape_t[size_y][size_x]);
+		std::unique_ptr<shape_t[][size_x] > amount_of_rainfall(CRAFTERRA_NEW shape_t[size_y][size_x]);
 		dtl::shape::PerlinIsland<shape_t>(12.0, 6, 225).draw(amount_of_rainfall, size_x, size_y);
 
 		//標高
-		std::unique_ptr<shape_t[][size_x] > elevation(new(std::nothrow) shape_t[size_y][size_x]);
+		std::unique_ptr<shape_t[][size_x] > elevation(CRAFTERRA_NEW shape_t[size_y][size_x]);
 		dtl::shape::PerlinIsland<shape_t>(7.0, 6, 195).draw(elevation, size_x, size_y);
 		//dtl::shape::PerlinSolitaryIsland<shape_t>(0.3, 0.4, 7.0, 6, 155).draw(elevation, size_x, size_y);
 
-		std::unique_ptr<shape_t[][size_x] > land(new(std::nothrow) shape_t[size_y][size_x]);
+		std::unique_ptr<shape_t[][size_x] > land(CRAFTERRA_NEW shape_t[size_y][size_x]);
 
 		//バイオーム
 		//std::unique_ptr<shape_t[][size_x] > biome(new(std::nothrow) shape_t[size_y][size_x]);

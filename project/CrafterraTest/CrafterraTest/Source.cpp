@@ -27,9 +27,9 @@
 namespace Crafterra {
 
 	namespace System {
-		void crafterraMain(::Crafterra::CrafterraManager& cm_) {
+		void crafterraMain(::Crafterra::Resource& cm_) {
 
-			ActorDirection cdt = actor_direction_down;
+			ActorDirection cdt = ::Crafterra::Enum::actor_direction_down;
 			int cd_anime = 0; // アニメーション
 
 			int time_count = 0;
@@ -44,7 +44,7 @@ namespace Crafterra {
 			using FieldMapMatrix = ::Crafterra::DataType::Matrix<MapChip, size_x, size_y>; // 世界
 			using FieldMapMatrixPtr = ::std::unique_ptr<FieldMapMatrix>; // 世界
 
-			FieldMapMatrixPtr map_chip_type_biome_map_matrix_ptr(new(::std::nothrow) FieldMapMatrix); // フィールドマップのポインタ
+			FieldMapMatrixPtr map_chip_type_biome_map_matrix_ptr(CRAFTERRA_NEW FieldMapMatrix); // フィールドマップのポインタ
 			if (!map_chip_type_biome_map_matrix_ptr) return; // メモリ確保できなかった時は return
 
 			FieldMapMatrix& field_map_matrix = (*map_chip_type_biome_map_matrix_ptr); // フィールドマップ
@@ -69,21 +69,23 @@ namespace Crafterra {
 				// キー関連
 				{
 					key.setKey();
-					if (key.getKey(KEY_INPUT_A) >= 1 || key.getKey(KEY_INPUT_LEFT) >= 1) {
-						cs.camera_size.moveX(-2);
-						cdt = actor_direction_left;
-					}
-					if (key.getKey(KEY_INPUT_D) >= 1 || key.getKey(KEY_INPUT_RIGHT) >= 1) {
-						cs.camera_size.moveX(2);
-						cdt = actor_direction_right;
-					}
-					if (key.getKey(KEY_INPUT_W) >= 1 || key.getKey(KEY_INPUT_UP) >= 1) {
-						cs.camera_size.moveY(-2);
-						cdt = actor_direction_up;
-					}
-					if (key.getKey(KEY_INPUT_S) >= 1 || key.getKey(KEY_INPUT_DOWN) >= 1) {
-						cs.camera_size.moveY(2);
-						cdt = actor_direction_down;
+					{
+						if (key.getKey(KEY_INPUT_A) >= 1 || key.getKey(KEY_INPUT_LEFT) >= 1) {
+							cs.camera_size.moveX(-2);
+							cdt = ::Crafterra::Enum::actor_direction_left;
+						}
+						if (key.getKey(KEY_INPUT_D) >= 1 || key.getKey(KEY_INPUT_RIGHT) >= 1) {
+							cs.camera_size.moveX(2);
+							cdt = ::Crafterra::Enum::actor_direction_right;
+						}
+						if (key.getKey(KEY_INPUT_W) >= 1 || key.getKey(KEY_INPUT_UP) >= 1) {
+							cs.camera_size.moveY(-2);
+							cdt = ::Crafterra::Enum::actor_direction_up;
+						}
+						if (key.getKey(KEY_INPUT_S) >= 1 || key.getKey(KEY_INPUT_DOWN) >= 1) {
+							cs.camera_size.moveY(2);
+							cdt = ::Crafterra::Enum::actor_direction_down;
+						}
 					}
 					if (key.getKey(KEY_INPUT_G) == 1) {
 						terrain(field_map_matrix);
@@ -111,14 +113,14 @@ namespace Crafterra {
 						cs.map_chip_size.setWidth(6.f);
 						cs.map_chip_size.setHeight(6.f);
 
-						operation_actor_state_in_field = operation_actor_state_in_field_map_airship;
+						operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_airship;
 					}
 					if (key.getDownKey(KEY_INPUT_2)) {
 
 						cs.map_chip_size.setWidth(64.f);
 						cs.map_chip_size.setHeight(64.f);
 
-						operation_actor_state_in_field = operation_actor_state_in_field_map_walking;
+						operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_walking;
 					}
 				}
 				{
@@ -131,14 +133,6 @@ namespace Crafterra {
 									cm_.getMapChip().getMapChip(field_map_matrix[y_][x_].getDrawChip()), TRUE);
 							}
 							else ::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), field_map_matrix[y_][x_].getColor(), TRUE);
-							
-							//::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-							//::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), GetColor(
-							//	(field_map_matrix[y_][x_].getElevation()>=255)?0: 255-field_map_matrix[y_][x_].getElevation(),
-							//	(field_map_matrix[y_][x_].getElevation()>=255)?0: 255-field_map_matrix[y_][x_].getElevation(),
-							//	(field_map_matrix[y_][x_].getElevation()>=255)?0: 255-field_map_matrix[y_][x_].getElevation()
-							//), TRUE);
-							//::DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 						}
 					);
 				}
@@ -146,23 +140,35 @@ namespace Crafterra {
 				int dir = 0;
 				const int cd_anime2 = ((cd_anime == 3) ? 1 : cd_anime);
 				switch (cdt) {
-				case actor_direction_down:dir = 0 + cd_anime2; break;
-				case actor_direction_left:dir = 3 + cd_anime2; break;
-				case actor_direction_right:dir = 6 + cd_anime2; break;
-				case actor_direction_up:dir = 9 + cd_anime2; break;
+				case ::Crafterra::Enum::actor_direction_down:dir = 0 + cd_anime2; break;
+				case ::Crafterra::Enum::actor_direction_left: dir = 3 + cd_anime2; break;
+				case ::Crafterra::Enum::actor_direction_right:dir = 6 + cd_anime2; break;
+				case ::Crafterra::Enum::actor_direction_up:   dir = 9 + cd_anime2; break;
 				}
 				// カメラの中心を描画
 				//::DxLib::DrawCircle(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2, cs.map_chip_size.getWidthHalf(), 0x00111111, TRUE);
+
+				//----------------------------------------------------------------------------------------------------
+				// フィールドマップにおける操作アクタの状態
 				switch (operation_actor_state_in_field) {
-				case Crafterra::operation_actor_state_in_field_map_empty:
-					break;
-				case Crafterra::operation_actor_state_in_field_map_walking:
-					// 人間を描画
+
+					//----------------------------------------------------------------------------------------------------
+					// 🚶 人間 ( 陸を歩行する者 ) 🚶 
+				case ::Crafterra::Enum::operation_actor_state_in_field_map_walking:
+
 					::DxLib::DrawRotaGraph(cs.window_size.getWidth() / 2, cs.window_size.getHeight() / 2,
 						cs.map_chip_size.getWidthHalf() / 16, 0.0,
 						cm_.getCharacterChip().getCharacterChip(1, dir), TRUE, FALSE);
 					break;
-				case Crafterra::operation_actor_state_in_field_map_airship:
+
+					//----------------------------------------------------------------------------------------------------
+					// 🚢 船 ( 海上に浮かんでいる者 ) 🚢 
+				case ::Crafterra::Enum::operation_actor_state_in_field_map_ship:
+					break;
+
+					//----------------------------------------------------------------------------------------------------
+					// 🛸 飛空艇 ( 空を飛んでいる者 ) 🛸 
+				case ::Crafterra::Enum::operation_actor_state_in_field_map_airship:
 					// 飛空艇の影を描画
 					::DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
 					::DxLib::DrawOval(int(cs.window_size.getWidth() / 2), int(cs.window_size.getHeight() / 2 + cs.map_chip_size.getHeight() * 32),
@@ -174,9 +180,11 @@ namespace Crafterra {
 						cs.map_chip_size.getWidthHalf(), 0.0,
 						cm_.getCharacterChip().getCharacterChip(0, dir), TRUE, FALSE);
 					break;
+
 				default:
 					break;
 				}
+				//----------------------------------------------------------------------------------------------------
 
 				// 座標を文字として出力
 				//DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), cm_.getFont().getFont(),

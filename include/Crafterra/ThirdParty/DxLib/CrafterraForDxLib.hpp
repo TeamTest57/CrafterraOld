@@ -27,6 +27,7 @@
 #ifdef __WINDOWS__
 
 #include <Crafterra/Basic/InitRead.hpp>
+#include <Crafterra/DataType/StringDataType.hpp>
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -38,7 +39,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	// 背景色を指定
 	::DxLib::SetBackgroundColor(75, 145, 230);
 	// ウィンドウテキストにタイトル名を表示
-	::DxLib::SetMainWindowText("Crafterra");
+	const ::Crafterra::DataType::String title_name = 
+		::Crafterra::DataType::String("Crafterra v") + 
+		::Crafterra::DataType::String(CRAFTERRA_LIBRARY_VERSION_NAME);
+	::DxLib::SetMainWindowText(title_name.c_str());
 	// フルスクリーンではなくウィンドウで表示
 	if (!init_read.isFullscreen()) {
 		::DxLib::ChangeWindowMode(TRUE);
@@ -61,12 +65,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	::Crafterra::MapChipImage map_chip_image;
 	::Crafterra::CharacterChipImage character_chip_image;
 
-	::Crafterra::CrafterraManager cm;
+	::Crafterra::Resource cm;
 
-	cm.setFont(&font);
-	cm.setMusic(&music);
-	cm.setMapChip(&map_chip_image);
-	cm.setCharacterChip(&character_chip_image);
+	cm.setFont(font);
+	cm.setMusic(music);
+	cm.setMapChip(map_chip_image);
+	cm.setCharacterChip(character_chip_image);
 
 	cm.setWindowWidth(init_read.getWindowWidth());
 	cm.setWindowHeight(init_read.getWindowHeight());
