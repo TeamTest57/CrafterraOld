@@ -54,7 +54,9 @@ namespace Crafterra {
 
 			InputKey key;
 
-			OperationActorStateInFieldMap operation_actor_state_in_field = operation_actor_state_in_field_map_airship;
+			// OperationActorStateInFieldMap operation_actor_state_in_field = operation_actor_state_in_field_map_airship;
+			OperationActorStateInFieldMap operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_walking;
+			cs.setMapChipSize(64.f);
 
 			ElapsedTime elapsed_time;
 
@@ -151,12 +153,51 @@ namespace Crafterra {
 					cs.updateCamera(
 						[&](const float csx_, const float csy_, const float cw_, const float ch_, const ::Crafterra::DataType::IndexUint x_, const ::Crafterra::DataType::IndexUint y_) {
 
-							if (field_map_matrix[y_][x_].getDrawChip() >= 0) {
+							const MapChip& field_map = field_map_matrix[y_][x_];
+
+							// 崖を先に描画
+							if (field_map.getIsCliff()) {
 								::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
-									resource_.getMapChip().getMapChip(field_map_matrix[y_][x_].getDrawChip()), TRUE);
+									resource_.getMapChip().getMapChip(0), TRUE);
+
+								::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
+									resource_.getMapChip().getMapChipCliffTop(field_map.getCliff()), TRUE);
 							}
-							else 
-								::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), field_map_matrix[y_][x_].getColor(), TRUE);
+							// 海を描画
+							else if (field_map.getBiome() == map_chip_type_biome_sea) {
+								//if (field_map.getDrawChip() >= 0) {
+								//	::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
+								//		resource_.getMapChip().getMapChip(field_map.getDrawChip()), TRUE);
+								//}
+								//else 
+								{
+									::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), field_map.getColor(), TRUE);
+								}
+							}
+							else if (field_map.getCliffTop() != map_chip_type_homogeneous_connection_size) {
+								::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
+									resource_.getMapChip().getMapChip(0), TRUE);
+
+								::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
+									resource_.getMapChip().getMapChipCliffTop(field_map.getCliffTop()), TRUE);
+							}
+							//else
+							//	::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), field_map.getColor(), TRUE);
+
+
+
+							//::DxLib::DrawBox(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f), 0x00aa2222, FALSE);
+							//DrawFormatStringToHandle(int(csx_ + 0.5f), int(csy_ + 0.5f), GetColor(255, 255, 255), resource_.getFont().getFont(), "E3:%d\n%s",
+							//	int(field_map.getElevation3())
+							//,((field_map.getIsCliff())?"TRUE":"FALSE")
+							//	);
+
+							// 崖を先に描画
+							//if (field_map.getDrawChip() == 8 * 12 + 1) {
+							//	::DxLib::DrawExtendGraph(int(csx_ + 0.5f), int(csy_ + 0.5f), int(csx_ + cw_ + 0.5f), int(csy_ + ch_ + 0.5f),
+							//		resource_.getMapChip().getMapChip(field_map.getDrawChip()), TRUE);
+							//}
+
 						}
 					);
 				}
@@ -214,9 +255,11 @@ namespace Crafterra {
 				//DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), resource_.getFont().getFont(),
 				DrawBox(0, 0, 200, 180, 0x44444444, TRUE);
 				printfDx(
-					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける"
+					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
 					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
 					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
+					, MapChipTypeBiomeString[field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getBiome()].c_str()
+					, field_map_matrix[100][100].getCliffTop()
 				);
 			}
 

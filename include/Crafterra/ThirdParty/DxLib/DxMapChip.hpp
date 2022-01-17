@@ -28,6 +28,7 @@ namespace Crafterra {
 	private:
 
 		DxGraphArray<8 * 249> base_map{};
+		DxGraphArray<4 * 8> cliff_top{};
 
 	public:
 
@@ -35,6 +36,10 @@ namespace Crafterra {
 			::DxLib::LoadDivGraph("./../../../resource/Picture/Chip/Map/Base(pipo).png", 8 * 249,
 				8, 249,
 				32, 32, base_map.getPtr());
+
+			::DxLib::LoadDivGraph("./../../../resource/Picture/Chip/AutoTile/Cliff(pipoya).png", 4 * 10,
+				4, 10,
+				32, 32, cliff_top.getPtr());
 		}
 
 		~MapChipImage() {
@@ -42,6 +47,7 @@ namespace Crafterra {
 		}
 
 		DxGraphInt getMapChip(const IndexUint index_) const { return this->base_map.get(index_); }
+		DxGraphInt getMapChipCliffTop(const IndexUint index_) const { return this->cliff_top.get(index_); }
 
 	};
 }

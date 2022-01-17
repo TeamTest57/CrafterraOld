@@ -34,6 +34,10 @@
 
 namespace Crafterra {
 
+	unsigned int getDxColor(const int r_, const int g_, const int b_) {
+		return (r_ * 256 + g_) * 256 + b_;
+	}
+
 	template<typename Matrix_>
 	void perlinNoise(
 		Matrix_& matrix_,
@@ -144,84 +148,157 @@ namespace Crafterra {
 				// 海
 				if (elevation[row][col] < 110) {
 					field_map_matrix[row][col].setElevation(110);
-					field_map_matrix[row][col].setElevation2(110 / 8);
+					field_map_matrix[row][col].setBlockElevation(110 / 16);
 				}
 				else {
 					field_map_matrix[row][col].setElevation(elevation[row][col]);
-					field_map_matrix[row][col].setElevation2(elevation[row][col] / 8);
+					field_map_matrix[row][col].setBlockElevation(elevation[row][col] / 16);
+				}
+				const ElevationUint elevation2 = field_map_matrix[row][col].getBlockElevation();
+				ElevationUint elevation3 = 0;
+				for (::Crafterra::DataType::IndexUint row3{ row }; elevation3 <= elevation2; --row3, ++elevation3) {
+					if (field_map_matrix[row3][col].getElevation3() < elevation3) field_map_matrix[row3][col].setElevation3(elevation3);
+					if (row3 == 0) break;
 				}
 
 				switch (field_map_matrix[row][col].getBiome()) {
 				case map_chip_type_biome_sea:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(33, 97, 124));
+					field_map_matrix[row][col].setColor(getDxColor(33, 97, 124));
 					break;
 				case map_chip_type_biome_lake:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(88, 124, 139));
+					field_map_matrix[row][col].setColor(getDxColor(88, 124, 139));
 					break;
 				case map_chip_type_biome_mountain:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(101, 100, 60));
+					field_map_matrix[row][col].setColor(getDxColor(101, 100, 60));
 					break;
 				case map_chip_type_biome_desert:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(217, 195, 143));
+					field_map_matrix[row][col].setColor(getDxColor(217, 195, 143));
 					break;
 				case map_chip_type_biome_forest:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(110, 149, 59));
+					field_map_matrix[row][col].setColor(getDxColor(110, 149, 59));
 					break;
 				case map_chip_type_biome_rock:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(120, 125, 108));
+					field_map_matrix[row][col].setColor(getDxColor(120, 125, 108));
 					break;
 				case map_chip_type_biome_hill:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(145, 177, 113));
+					field_map_matrix[row][col].setColor(getDxColor(145, 177, 113));
 					break;
 				case map_chip_type_biome_savannah:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(144, 140, 73));
+					field_map_matrix[row][col].setColor(getDxColor(144, 140, 73));
 					break;
 				case map_chip_type_biome_grass:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(90, 128, 63));
+					field_map_matrix[row][col].setColor(getDxColor(90, 128, 63));
 					break;
 				case map_chip_type_biome_wall:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(200, 200, 200));
+					field_map_matrix[row][col].setColor(getDxColor(200, 200, 200));
 					break;
 				case map_chip_type_biome_way:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(90, 128, 63));
+					field_map_matrix[row][col].setColor(getDxColor(90, 128, 63));
 					break;
 				case map_chip_type_biome_room:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(50, 160, 70));
+					field_map_matrix[row][col].setColor(getDxColor(50, 160, 70));
 					break;
 				case map_chip_type_biome_default:
-					field_map_matrix[row][col].setColor(::DxLib::GetColor(170, 160, 70));
+					field_map_matrix[row][col].setColor(getDxColor(170, 160, 70));
 					break;
 				}
 
-				field_map_matrix[row][col].setDrawChip();
+				//field_map_matrix[row][col].setDrawChip();
+
+				const Int32 row2 = row - field_map_matrix[row][col].getBlockElevation();
+				if (row2 >= 0) {
+					if (!field_map_matrix[row][col].getIsCliff())
+						//field_map_matrix[row2][col].setDrawChip(field_map_matrix[row][col].getDrawChip());
+					field_map_matrix[row2][col].setColor(field_map_matrix[row][col].getColor());
+					field_map_matrix[row2][col].setBiome(field_map_matrix[row][col].getBiome());
+				}
 
 			}
 
-		for (::Crafterra::DataType::IndexUint col{ 1 }; col < init_field_map_width - 1; ++col)
-			for (::Crafterra::DataType::IndexUint row{ 1 }; row < init_field_map_height - 1; ++row) {
-
-				// for (::Crafterra::DataType::IndexUint row2{ row + 1 }, count = 1; row2 < init_field_map_height; ++row2, ++count) {
-				for (::Crafterra::DataType::IndexUint row2{ init_field_map_height - 1 - 1 }, count = init_field_map_height - row - 1; row2 > 0; --row2, --count) {
-					if (field_map_matrix[row2][col].getElevation2() >= count) {
-
-						// 下が崖の場合
-						if (field_map_matrix[row2][col].getElevation2() > count) {
-							field_map_matrix[row][col].setDrawChip(8 * 12 + 1);
-						}
-						// 下がちょうど地面の場合
-						else if (field_map_matrix[row2][col].getElevation2() == count) {
-							field_map_matrix[row][col].setDrawChip(field_map_matrix[row2][col].getDrawChip());
-							field_map_matrix[row][col].setColor(field_map_matrix[row2][col].getColor());
-
-							// 実験
-							// field_map_matrix[row][col].setDrawChip(field_map_matrix[row2][col].getElevation()/8);
-						}
-						// 実験
-						//field_map_matrix[row][col].setElevation(field_map_matrix[row2][col].getElevation());
-						break;
-					}
+		for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
+			for (::Crafterra::DataType::Int32 row{ 1 }; row < init_field_map_height - 1; ++row) {
+				if (field_map_matrix[row][col].getElevation3() < field_map_matrix[row-1][col].getElevation3()) {
+					field_map_matrix[row][col].setDrawChip(8 * 12 + 1);
+					field_map_matrix[row][col].setIsCliff(true); // 崖
 				}
 			}
+
+		for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
+			for (::Crafterra::DataType::Int32 row{}; row < init_field_map_height - 1; ++row) {
+				field_map_matrix[row][col].setCliff(
+					field_map_matrix[row][col].getHomogeneousConnectionCliff(
+						  field_map_matrix[row][col - 1].getIsCliff() || ((!field_map_matrix[row][col - 1].getIsCliff()) && field_map_matrix[row][col].getElevation3() < field_map_matrix[row][col - 1].getElevation3())
+						, field_map_matrix[row][col + 1].getIsCliff() || ((!field_map_matrix[row][col + 1].getIsCliff()) && field_map_matrix[row][col].getElevation3() < field_map_matrix[row][col + 1].getElevation3())
+						, field_map_matrix[row + 1][col].getIsCliff()
+					)
+				);
+			}
+
+		//for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
+		//	for (::Crafterra::DataType::Int32 row{ 1 }; row < init_field_map_height - 1; ++row) {
+
+		//		//const ElevationUint elevation3 = field_map_matrix[row][col].getBlockElevation();
+		//		Int32 row2 = row - field_map_matrix[row][col].getBlockElevation();
+		//		//if (row2 < 0) continue;
+		//		if (row2 >= 0) {
+
+		//			//field_map_matrix[row2][col].setElevation3(elevation3);
+		//			if(!field_map_matrix[row][col].getIsCliff())
+		//			field_map_matrix[row2][col].setDrawChip(field_map_matrix[row][col].getDrawChip());
+		//			field_map_matrix[row2][col].setColor(field_map_matrix[row][col].getColor());
+		//			field_map_matrix[row2][col].setBiome(field_map_matrix[row][col].getBiome());
+		//		}
+		//		else  row2 = 0;
+
+		//		//for (::Crafterra::DataType::Int32 row3{ row2 }; row3 < row + 1; ++row3) {
+		//		//	field_map_matrix[row][col].setDrawChip(8 * 12 + 1);
+		//		//	field_map_matrix[row][col].setIsCliff(true); // 崖
+		//		//}
+
+		//	}
+		for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
+			for (::Crafterra::DataType::Int32 row{ 1 }; row < init_field_map_height - 1; ++row) {
+				if (field_map_matrix[row][col].getIsCliff()) continue;
+				field_map_matrix[row][col].setCliffTop(
+				field_map_matrix[row][col].getHomogeneousConnectionValueElevation3(
+					field_map_matrix[row][col].getElevation3()
+					, field_map_matrix[row - 1][col].getElevation3()
+					, field_map_matrix[row][col - 1].getElevation3()
+					, field_map_matrix[row][col + 1].getElevation3()
+					, field_map_matrix[row + 1][col].getElevation3()
+					, field_map_matrix[row - 1][col - 1].getElevation3()
+					, field_map_matrix[row - 1][col + 1].getElevation3()
+					, field_map_matrix[row + 1][col - 1].getElevation3()
+					, field_map_matrix[row + 1][col + 1].getElevation3()
+				));
+
+			}
+
+		//for (::Crafterra::DataType::IndexUint col{ 1 }; col < init_field_map_width - 1; ++col)
+		//	for (::Crafterra::DataType::IndexUint row{ 1 }; row < init_field_map_height - 1; ++row) {
+
+		//		// for (::Crafterra::DataType::IndexUint row2{ row + 1 }, count = 1; row2 < init_field_map_height; ++row2, ++count) {
+		//		for (::Crafterra::DataType::IndexUint row2{ init_field_map_height - 1 - 1 }, count = init_field_map_height - row - 1; row2 > 0; --row2, --count) {
+		//			if (field_map_matrix[row2][col].getBlockElevation() >= count) {
+
+		//				// 下が崖の場合
+		//				if (field_map_matrix[row2][col].getBlockElevation() > count) {
+		//					field_map_matrix[row][col].setDrawChip(8 * 12 + 1);
+		//				}
+		//				// 下がちょうど地面の場合
+		//				else if (field_map_matrix[row2][col].getBlockElevation() == count) {
+		//					field_map_matrix[row][col].setDrawChip(field_map_matrix[row2][col].getDrawChip());
+		//					field_map_matrix[row][col].setColor(field_map_matrix[row2][col].getColor());
+
+		//					// 実験
+		//					// field_map_matrix[row][col].setDrawChip(field_map_matrix[row2][col].getElevation()/8);
+		//				}
+		//				// 実験
+		//				//field_map_matrix[row][col].setElevation(field_map_matrix[row2][col].getElevation());
+		//				break;
+		//			}
+		//		}
+		//	}
 
 	}
 

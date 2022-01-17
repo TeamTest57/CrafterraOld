@@ -39,7 +39,7 @@ namespace Crafterra {
 			font_path = "./../../../resource/Font/Misaki Gothic.ttf"; // 読み込むフォントファイルのパス
 			is_font = (AddFontResourceEx(font_path, FR_PRIVATE, nullptr) != 0);
 #endif // __WINDOWS__
-			if(is_font) m_font = CreateFontToHandle(nullptr, 30, -1, -1, DX_CHARSET_SHFTJIS);
+			if(is_font) m_font = CreateFontToHandle(nullptr, 10, -1, -1, DX_CHARSET_SHFTJIS);
 		}
 
 		~Font() {
