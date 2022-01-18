@@ -21,7 +21,7 @@
 
 // 正式バージョン数値
 #ifndef CRAFTERRA_LIBRARY_VERSION
-#define CRAFTERRA_LIBRARY_VERSION (20220116L)
+#define CRAFTERRA_LIBRARY_VERSION (20220118L)
 #endif
 
 // Crafterra 主要バージョン ( 0 がテスト版 , 1 から正式リリース版の予定 )
@@ -41,13 +41,14 @@
 
 // 正式バージョン名 ( https://github.com/AsPJT/Crafterra )
 #ifndef CRAFTERRA_LIBRARY_VERSION_NAME
-#define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.3"
+#define CRAFTERRA_LIBRARY_VERSION_NAME "5.0.0.1.4"
 #endif
 
 /*##########################################################################################
 	更新履歴
 	バージョン |     更新日    |           概要
 	5.0.0.1.X  | 2022/0X/XX | コピペ用
+	5.0.0.1.4  | 2022/01/18 | 崖上＆崖自動タイル独自規格とウディタオートタイル規格に対応
 	5.0.0.1.3  | 2022/01/16 | Crafterra 独自のデータ型実装を追加
 	5.0.0.1.2  | 2022/01/14 | GitHub での一般公開
 	5.0.0.1.1  | 2022/01/12 | Crafterra をライブラリ化

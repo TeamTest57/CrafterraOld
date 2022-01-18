@@ -28,7 +28,34 @@ namespace Crafterra {
 	private:
 
 		DxGraphArray<8 * 249> base_map{};
-		DxGraphArray<4 * 8> cliff_top{};
+		DxGraphArray<4 * 10> cliff_top{};
+		DxGraphArray<16 * 10> sea{};
+		DxGraphArray<4 * 10> desert{};
+		Uint8 sea_alpha[16 * 10] = {
+			0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+			,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+			,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+			,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+			,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+			,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+			,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+			,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+			,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+			,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+		};
+
+		Uint8 cliff_top_alpha[4 * 10] = {
+			0,1,1,0
+			,1,0,0,0
+			,1,1,0,0
+			,1,1,0,0
+			,1,1,1,0
+			,1,1,1,0
+			,1,1,1,0
+			,1,1,1,0
+			,1,1,1,1
+			,0,0,0,0
+		};
 
 	public:
 
@@ -40,6 +67,13 @@ namespace Crafterra {
 			::DxLib::LoadDivGraph("./../../../resource/Picture/Chip/AutoTile/Cliff(pipoya).png", 4 * 10,
 				4, 10,
 				32, 32, cliff_top.getPtr());
+
+			::DxLib::LoadDivGraph("./../../../resource/Picture/Chip/AutoTile/Water1(pipoya).png", 16 * 10,
+				16, 10,
+				16, 16, sea.getPtr());
+			::DxLib::LoadDivGraph("./../../../resource/Picture/Chip/AutoTile/[A]Dirt3_pipo.png", 4 * 10,
+				4, 10,
+				16, 16, desert.getPtr());
 		}
 
 		~MapChipImage() {
@@ -47,7 +81,11 @@ namespace Crafterra {
 		}
 
 		DxGraphInt getMapChip(const IndexUint index_) const { return this->base_map.get(index_); }
+		DxGraphInt getSea(const IndexUint index_) const { return this->sea.get(index_); }
+		DxGraphInt getDesert(const IndexUint index_) const { return this->desert.get(index_); }
+		Uint8 getSeaAlpha(const IndexUint index_) const { return this->sea_alpha[index_]; }
 		DxGraphInt getMapChipCliffTop(const IndexUint index_) const { return this->cliff_top.get(index_); }
+		Uint8 getMapChipCliffTopAlpha(const IndexUint index_) const { return this->cliff_top_alpha[index_]; }
 
 	};
 }

@@ -28,6 +28,8 @@
 #include <memory>
 #include <Crafterra/Macro/New.hpp> // CRAFTERRA_NEW
 
+#include <Crafterra/Map/HomogeneousConnection.hpp>
+
 
 // 地形生成用 ( 後に削除予定 )
 #include <DTL.hpp>
@@ -50,11 +52,12 @@ namespace Crafterra {
 		const double frequency_x{ (end_x_ - start_x_) / frequency_ };
 		const double frequency_y{ (end_y_ - start_y_) / frequency_ };
 
-		for (::dtl::type::size row{ start_y_ }; row < end_y_; ++row)
-			for (::dtl::type::size col{ start_x_ }; col < end_x_; ++col)
+		for (IndexUint row{ start_y_ }; row < end_y_; ++row)
+			for (IndexUint col{ start_x_ }; col < end_x_; ++col)
 				matrix_[col][row] = 
 					min_height_ + static_cast<ElevationUint>((max_height_ - min_height_) * 
-						perlin.octaveNoise(octaves_, (chunk_x_ * chunk_max_x_ + col) / frequency_x, row / (chunk_y_ * chunk_max_y_ + frequency_y)));
+						perlin.octaveNoise(octaves_, 
+						(Uint64(chunk_x_) * Uint64(chunk_max_x_) + Uint64(col)) / frequency_x, Uint64(row) / (Uint64(chunk_y_) * Uint64(chunk_max_y_) + frequency_y)));
 	}
 
 	// フィールドマップを生成
@@ -63,6 +66,7 @@ namespace Crafterra {
 
 		std::random_device seed_gen;
 		std::mt19937 engine(seed_gen());
+		std::bernoulli_distribution uid(0.01);
 
 		//温度
 		std::unique_ptr<shape_t[][init_field_map_width] > temperature(CRAFTERRA_NEW shape_t[init_field_map_height][init_field_map_width]);
@@ -218,7 +222,7 @@ namespace Crafterra {
 		for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
 			for (::Crafterra::DataType::Int32 row{ 1 }; row < init_field_map_height - 1; ++row) {
 				if (field_map_matrix[row][col].getElevation3() < field_map_matrix[row-1][col].getElevation3()) {
-					field_map_matrix[row][col].setDrawChip(8 * 12 + 1);
+					//field_map_matrix[row][col].setDrawChip(8 * 12 + 1);
 					field_map_matrix[row][col].setIsCliff(true); // 崖
 				}
 			}
@@ -226,7 +230,7 @@ namespace Crafterra {
 		for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
 			for (::Crafterra::DataType::Int32 row{}; row < init_field_map_height - 1; ++row) {
 				field_map_matrix[row][col].setCliff(
-					field_map_matrix[row][col].getHomogeneousConnectionCliff(
+					getHomogeneousConnectionCliff(
 						  field_map_matrix[row][col - 1].getIsCliff() || ((!field_map_matrix[row][col - 1].getIsCliff()) && field_map_matrix[row][col].getElevation3() < field_map_matrix[row][col - 1].getElevation3())
 						, field_map_matrix[row][col + 1].getIsCliff() || ((!field_map_matrix[row][col + 1].getIsCliff()) && field_map_matrix[row][col].getElevation3() < field_map_matrix[row][col + 1].getElevation3())
 						, field_map_matrix[row + 1][col].getIsCliff()
@@ -234,33 +238,11 @@ namespace Crafterra {
 				);
 			}
 
-		//for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
-		//	for (::Crafterra::DataType::Int32 row{ 1 }; row < init_field_map_height - 1; ++row) {
-
-		//		//const ElevationUint elevation3 = field_map_matrix[row][col].getBlockElevation();
-		//		Int32 row2 = row - field_map_matrix[row][col].getBlockElevation();
-		//		//if (row2 < 0) continue;
-		//		if (row2 >= 0) {
-
-		//			//field_map_matrix[row2][col].setElevation3(elevation3);
-		//			if(!field_map_matrix[row][col].getIsCliff())
-		//			field_map_matrix[row2][col].setDrawChip(field_map_matrix[row][col].getDrawChip());
-		//			field_map_matrix[row2][col].setColor(field_map_matrix[row][col].getColor());
-		//			field_map_matrix[row2][col].setBiome(field_map_matrix[row][col].getBiome());
-		//		}
-		//		else  row2 = 0;
-
-		//		//for (::Crafterra::DataType::Int32 row3{ row2 }; row3 < row + 1; ++row3) {
-		//		//	field_map_matrix[row][col].setDrawChip(8 * 12 + 1);
-		//		//	field_map_matrix[row][col].setIsCliff(true); // 崖
-		//		//}
-
-		//	}
 		for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
 			for (::Crafterra::DataType::Int32 row{ 1 }; row < init_field_map_height - 1; ++row) {
 				if (field_map_matrix[row][col].getIsCliff()) continue;
 				field_map_matrix[row][col].setCliffTop(
-				field_map_matrix[row][col].getHomogeneousConnectionValueElevation3(
+				getHomogeneousConnectionValueElevation3(
 					field_map_matrix[row][col].getElevation3()
 					, field_map_matrix[row - 1][col].getElevation3()
 					, field_map_matrix[row][col - 1].getElevation3()
@@ -271,35 +253,31 @@ namespace Crafterra {
 					, field_map_matrix[row + 1][col - 1].getElevation3()
 					, field_map_matrix[row + 1][col + 1].getElevation3()
 				));
+				field_map_matrix[row][col].setAutoTile(
+					getHomogeneousConnectionAutoTile(
+						  field_map_matrix[row - 1][col].getBiome() == field_map_matrix[row][col].getBiome() && field_map_matrix[row - 1][col].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row - 1][col].getIsCliff())
+						, field_map_matrix[row][col - 1].getBiome() == field_map_matrix[row][col].getBiome() && field_map_matrix[row][col - 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row][col - 1].getIsCliff())
+						, field_map_matrix[row][col + 1].getBiome() == field_map_matrix[row][col].getBiome() && field_map_matrix[row][col + 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row][col + 1].getIsCliff())
+						, field_map_matrix[row + 1][col].getBiome() == field_map_matrix[row][col].getBiome() && field_map_matrix[row + 1][col].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row + 1][col].getIsCliff())
+						, field_map_matrix[row - 1][col - 1].getBiome() == field_map_matrix[row][col].getBiome() && field_map_matrix[row - 1][col - 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row - 1][col - 1].getIsCliff())
+						, field_map_matrix[row - 1][col + 1].getBiome() == field_map_matrix[row][col].getBiome() && field_map_matrix[row - 1][col + 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row - 1][col + 1].getIsCliff())
+						, field_map_matrix[row + 1][col - 1].getBiome() == field_map_matrix[row][col].getBiome() && field_map_matrix[row + 1][col - 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row + 1][col - 1].getIsCliff())
+						, field_map_matrix[row + 1][col + 1].getBiome() == field_map_matrix[row][col].getBiome() && field_map_matrix[row + 1][col + 1].getElevation3() == field_map_matrix[row][col].getElevation3() && (!field_map_matrix[row + 1][col + 1].getIsCliff())
+					)
+				);
+				// 海でも崖でもない時
+				if (field_map_matrix[row][col].getBiome() != map_chip_type_biome_sea && (!field_map_matrix[row][col].getIsCliff())) {
+					if (uid(engine)) {
+						if (field_map_matrix[row][col].getBiome() == map_chip_type_biome_default) {
+							field_map_matrix[row][col].setDrawChip(52); // 花を設置
+						}
+						else {
+							field_map_matrix[row][col].setDrawChip(64); // 石を設置
+						}
+					}
+				}
 
 			}
-
-		//for (::Crafterra::DataType::IndexUint col{ 1 }; col < init_field_map_width - 1; ++col)
-		//	for (::Crafterra::DataType::IndexUint row{ 1 }; row < init_field_map_height - 1; ++row) {
-
-		//		// for (::Crafterra::DataType::IndexUint row2{ row + 1 }, count = 1; row2 < init_field_map_height; ++row2, ++count) {
-		//		for (::Crafterra::DataType::IndexUint row2{ init_field_map_height - 1 - 1 }, count = init_field_map_height - row - 1; row2 > 0; --row2, --count) {
-		//			if (field_map_matrix[row2][col].getBlockElevation() >= count) {
-
-		//				// 下が崖の場合
-		//				if (field_map_matrix[row2][col].getBlockElevation() > count) {
-		//					field_map_matrix[row][col].setDrawChip(8 * 12 + 1);
-		//				}
-		//				// 下がちょうど地面の場合
-		//				else if (field_map_matrix[row2][col].getBlockElevation() == count) {
-		//					field_map_matrix[row][col].setDrawChip(field_map_matrix[row2][col].getDrawChip());
-		//					field_map_matrix[row][col].setColor(field_map_matrix[row2][col].getColor());
-
-		//					// 実験
-		//					// field_map_matrix[row][col].setDrawChip(field_map_matrix[row2][col].getElevation()/8);
-		//				}
-		//				// 実験
-		//				//field_map_matrix[row][col].setElevation(field_map_matrix[row2][col].getElevation());
-		//				break;
-		//			}
-		//		}
-		//	}
-
 	}
 
 }
