@@ -25,6 +25,8 @@
 
 #include <chrono>
 
+#include <random>
+
 namespace Crafterra {
 
 	namespace System {
@@ -39,6 +41,11 @@ namespace Crafterra {
 
 			::DxLib::PlaySoundMem(resource_.getMusic().getMusic(), DX_PLAYTYPE_LOOP, TRUE);
 
+			std::random_device seed_gen;
+			std::mt19937 engine(seed_gen());
+			const Uint32 temperature_seed = engine();
+			const Uint32 amount_of_rainfall_seed = engine();
+			const Uint32 elevation_seed = engine();
 
 			CoordinateSystem cs(resource_.getWindowWidth(), resource_.getWindowHeight());
 
@@ -51,7 +58,11 @@ namespace Crafterra {
 
 			FieldMapMatrix& field_map_matrix = (*map_chip_type_biome_map_matrix_ptr); // フィールドマップ
 
-			terrain(field_map_matrix);
+			IndexUint chunk_x = 1000;
+			IndexUint chunk_y = 1000;
+
+			Terrain terrain(temperature_seed, amount_of_rainfall_seed, elevation_seed);
+			terrain.initialGeneration2(field_map_matrix, chunk_x,chunk_y);
 
 			InputKey key;
 
@@ -61,12 +72,13 @@ namespace Crafterra {
 
 			ElapsedTime elapsed_time;
 
+
 			while (::Crafterra::System::Update()) {
 				elapsed_time.update();
 				const Int64 elapsed = elapsed_time.getMicroseconds();
 
-				clsDx();
-				printfDx("%d micro sec/f\n", int(elapsed));
+				//clsDx();
+				//DxLib::printfDx("%d micro sec/f\n", int(elapsed));
 
 				++time_count;
 				if (time_count >= time_count_max) {
@@ -130,40 +142,54 @@ namespace Crafterra {
 							}
 						}
 						if (key.getKey(KEY_INPUT_G) == 1) {
-							terrain(field_map_matrix);
+							terrain.initialGeneration(field_map_matrix);
 						}
 						if (key.getKey(KEY_INPUT_J) >= 1) {
-							cs.setMapChipWidth(cs.map_chip_size.getWidth() * 0.995f);
-							cs.setMapChipHeight(cs.map_chip_size.getHeight() * 0.995f);
-
-							const float re_init_csx = float(cs.window_size.getWidth()) / cs.map_chip_size.getWidth();
-							const float re_init_csy = float(cs.window_size.getHeight()) / cs.map_chip_size.getHeight();
-							cs.camera_size.setWidth(re_init_csx);
-							cs.camera_size.setHeight(re_init_csy);
+							cs.setMapChipSize(cs.map_chip_size.getWidth() * 0.995f, cs.map_chip_size.getHeight() * 0.995f);
 						}
 						if (key.getKey(KEY_INPUT_K) >= 1) {
-							cs.setMapChipWidth(cs.map_chip_size.getWidth() * 1.005f);
-							cs.setMapChipHeight(cs.map_chip_size.getHeight() * 1.005f);
-
-							const float re_init_csx = float(cs.window_size.getWidth()) / cs.map_chip_size.getWidth();
-							const float re_init_csy = float(cs.window_size.getHeight()) / cs.map_chip_size.getHeight();
-							cs.camera_size.setWidth(re_init_csx);
-							cs.camera_size.setHeight(re_init_csy);
+							cs.setMapChipSize(cs.map_chip_size.getWidth() * 1.005f, cs.map_chip_size.getHeight() * 1.005f);
 						}
 						if (key.getDownKey(KEY_INPUT_1)) {
-
 							cs.setMapChipSize(6.f);
-
 							operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_airship;
 						}
 						if (key.getDownKey(KEY_INPUT_2)) {
-
 							cs.setMapChipSize(64.f);
-
 							operation_actor_state_in_field = ::Crafterra::Enum::operation_actor_state_in_field_map_walking;
 						}
 					}
 				}
+				// 無限生成処理
+				{
+					if (cs.camera_size.getCenterX() > float(cs.field_map_size.getCenterX() + (cs.field_map_size.getWidthHalf() * 2 / 3))) {
+						cs.camera_size.moveX(-float(cs.field_map_size.getWidthHalf()));
+						++chunk_x;
+						//terrain.initialGeneration2(field_map_matrix, chunk_x, chunk_y);
+						terrain.moveLeftTerrain(field_map_matrix, init_field_map_width / 2);
+						//terrain.generation(field_map_matrix, chunk_x, chunk_y, 0, 0, init_field_map_width / 2, init_field_map_height);
+						terrain.generation(field_map_matrix, chunk_x + 1, chunk_y, init_field_map_width / 2, 0, init_field_map_width, init_field_map_height);
+					}
+					else if (cs.camera_size.getCenterX() < float(cs.field_map_size.getCenterX() - (cs.field_map_size.getWidthHalf() * 2 / 3))) {
+						cs.camera_size.moveX(+float(cs.field_map_size.getWidthHalf()));
+						--chunk_x;
+						terrain.initialGeneration2(field_map_matrix, chunk_x, chunk_y);
+						//terrain.moveRightTerrain(field_map_matrix, init_field_map_width / 2, 0, 0, init_field_map_width, init_field_map_height);
+					}
+					if (cs.camera_size.getCenterY() > float(cs.field_map_size.getCenterY() + (cs.field_map_size.getHeightHalf() * 2 / 3))) {
+						cs.camera_size.moveY(-float(cs.field_map_size.getHeightHalf()));
+						++chunk_y;
+						terrain.initialGeneration2(field_map_matrix, chunk_x, chunk_y);
+						//terrain.moveUpTerrain(field_map_matrix, init_field_map_height / 2, 0, 0, init_field_map_width, init_field_map_height);
+					}
+					else if (cs.camera_size.getCenterY() < float(cs.field_map_size.getCenterY() - (cs.field_map_size.getHeightHalf() * 2 / 3))) {
+						cs.camera_size.moveY(+float(cs.field_map_size.getHeightHalf()));
+						--chunk_y;
+						terrain.initialGeneration2(field_map_matrix, chunk_x, chunk_y);
+						//terrain.moveDownTerrain(field_map_matrix, init_field_map_height / 2, 0, 0, init_field_map_width, init_field_map_height);
+					}
+				}
+
 				{
 					// 描画関数
 					cs.updateCamera(
@@ -188,7 +214,7 @@ namespace Crafterra {
 									resource_.getMapChip().getMapChipCliffTop(field_map.getCliff()), TRUE);
 							}
 							// 海を描画
-							else if (field_map.getBiome() == map_chip_type_biome_sea) {
+							else if (field_map.getDrawBiome() == map_chip_type_biome_sea) {
 								if (
 									resource_.getMapChip().getSeaAlpha(getAutoTileIndex(field_map.getAutoTile().auto_tile_upper_left, cd_anime_sea, 8)) == 0 ||
 									resource_.getMapChip().getSeaAlpha(getAutoTileIndex(field_map.getAutoTile().auto_tile_upper_right, cd_anime_sea, 8)) == 0 ||
@@ -219,7 +245,7 @@ namespace Crafterra {
 							}
 							// ------------------------------------------------------------------------------------------------------------------------------------
 							if (field_map.getIsCliff()) return;
-							if (field_map.getBiome() == map_chip_type_biome_desert) {
+							if (field_map.getDrawBiome() == map_chip_type_biome_desert) {
 								::DxLib::DrawExtendGraph(start_x, start_y, center_x, center_y,
 									resource_.getMapChip().getDesert(getAutoTileIndex(field_map.getAutoTile().auto_tile_upper_left, 0, 2)), TRUE);
 								::DxLib::DrawExtendGraph(center_x, start_y, end_x, center_y,
@@ -289,16 +315,16 @@ namespace Crafterra {
 
 				// 座標を文字として出力
 				//DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), resource_.getFont().getFont(),
-				DrawBox(0, 0, 200, 180, 0x44444444, TRUE);
-				printfDx(
-					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
-					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
-					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
-					, MapChipTypeBiomeString[field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getBiome()].c_str()
-					//, int(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
-					, resource_.getMapChip().getDesert(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 0))
-					//, field_map_matrix[100][100].getCliffTop()
-				);
+				//DrawBox(0, 0, 200, 180, 0x44444444, TRUE);
+				//DxLib::printfDx(
+				//	u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
+				//	, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
+				//	, cs.camera_size.getStartX(), cs.camera_size.getStartY()
+				//	, MapChipTypeBiomeString[field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getBiome()].c_str()
+				//	//, int(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
+				//	, resource_.getMapChip().getDesert(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 0))
+				//	//, field_map_matrix[100][100].getCliffTop()
+				//);
 			}
 
 		}

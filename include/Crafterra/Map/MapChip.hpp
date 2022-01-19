@@ -77,12 +77,26 @@ namespace Crafterra {
 		ElevationUint block_elevation{}; // ブロックの高さに合わせた標高値
 		ElevationUint elevation3{}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
 
+
+		BiomeType draw_biome{ map_chip_type_biome_empty }; // 描画用バイオーム
+
 		AutoTile auto_tile{};
 
 		int draw_chip = -1;
 
 	public:
 
+		void clearDrawValue() {
+			cliff_top = map_chip_type_homogeneous_connection_size;
+			cliff = map_chip_type_homogeneous_connection_size;
+			is_cliff = false;
+
+			elevation = {}; // 元の標高値
+			block_elevation = {}; // ブロックの高さに合わせた標高値
+			elevation3 = {}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
+			auto_tile = {};
+			draw_chip = -1;
+		}
 
 
 		void setDrawChip(const int draw_chip_) {
@@ -132,6 +146,12 @@ namespace Crafterra {
 		}
 		void setBiome(const BiomeType& biome_) {
 			this->biome = biome_;
+		}
+		BiomeType getDrawBiome() const {
+			return this->draw_biome;
+		}
+		void setDrawBiome(const BiomeType& draw_biome_) {
+			this->draw_biome = draw_biome_;
 		}
 		BlockType getBlock() const {
 			return this->block;
