@@ -22,6 +22,8 @@
 #include <Crafterra/DataType/PrimitiveDataType.hpp>
 #include <Crafterra/ThirdParty/DxLib/DxDataType.hpp>
 
+#include <Crafterra/Map/HomogeneousConnection.hpp> // AutoTileIndex
+
 namespace Crafterra {
 
 	class MapChipImage {
@@ -42,6 +44,18 @@ namespace Crafterra {
 			,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 			,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 			,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+		};
+		Uint8 desert_alpha[4 * 10] = {
+			0,0,0,0
+			,0,0,0,0
+			,0,0,0,0
+			,0,0,0,0
+			,0,0,0,0
+			,0,0,0,0
+			,0,0,0,0
+			,0,0,0,0
+			,1,1,1,1
+			,1,1,1,1
 		};
 
 		Uint8 cliff_top_alpha[4 * 10] = {
@@ -84,6 +98,19 @@ namespace Crafterra {
 		DxGraphInt getSea(const IndexUint index_) const { return this->sea.get(index_); }
 		DxGraphInt getDesert(const IndexUint index_) const { return this->desert.get(index_); }
 		Uint8 getSeaAlpha(const IndexUint index_) const { return this->sea_alpha[index_]; }
+		bool getIsSeaAlpha(const IndexUint index_) const { return (this->sea_alpha[index_] == 0); }
+		bool getIsAlpha(const AutoTileIndex& auto_tile_index_, const Uint8* const alpha_array_) const {
+			return ((alpha_array_[auto_tile_index_.auto_tile_upper_left] == 0) ||
+				(alpha_array_[auto_tile_index_.auto_tile_upper_right] == 0) ||
+				(alpha_array_[auto_tile_index_.auto_tile_lower_left] == 0) ||
+				(alpha_array_[auto_tile_index_.auto_tile_lower_right] == 0));
+		}
+		bool getIsSeaAlpha(const AutoTileIndex& auto_tile_index_) const {
+			return getIsAlpha(auto_tile_index_, this->sea_alpha);
+		}
+		bool getIsDesertAlpha(const AutoTileIndex& auto_tile_index_) const {
+			return getIsAlpha(auto_tile_index_, this->desert_alpha);
+		}
 		DxGraphInt getMapChipCliffTop(const IndexUint index_) const { return this->cliff_top.get(index_); }
 		Uint8 getMapChipCliffTopAlpha(const IndexUint index_) const { return this->cliff_top_alpha[index_]; }
 

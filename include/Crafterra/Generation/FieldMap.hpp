@@ -42,22 +42,22 @@ namespace Crafterra {
 
 	template<typename Matrix_>
 	void perlinNoise(
-		Matrix_& matrix_,
-		const IndexUint chunk_index_x_, const IndexUint chunk_index_y_, const IndexUint one_chunk_width_, const IndexUint one_chunk_height_,
+		const Matrix_& matrix_,
+		const Uint32 chunk_index_x_, const Uint32 chunk_index_y_, const IndexUint one_chunk_width_, const IndexUint one_chunk_height_,
 		const IndexUint start_x_, const IndexUint start_y_, const IndexUint end_x_, const IndexUint end_y_,
 		::dtl::utility::PerlinNoise<double>& perlin, const double frequency_, const IndexUint octaves_,
 		const ElevationUint max_height_, const ElevationUint min_height_ = 0) {
 
 		for (IndexUint row_index{ start_y_ }, row{}; row_index < end_y_; ++row_index, ++row)
 			for (IndexUint col_index{ start_x_ }, col{}; col_index < end_x_; ++col_index, ++col)
-				matrix_[row_index][col_index] =
+				matrix_(col_index, row_index,
 				min_height_ + static_cast<ElevationUint>(
 				(max_height_ - min_height_) *
 					perlin.octaveNoise(octaves_,
 					(Uint64(chunk_index_x_) * Uint64(one_chunk_width_) + Uint64(col)) / frequency_,
 						((Uint64(chunk_index_y_) * Uint64(one_chunk_height_) + Uint64(row)) / frequency_)
 					)
-					);
+					));
 	}
 
 
@@ -66,13 +66,6 @@ namespace Crafterra {
 		// 暫定的なマップデータ
 		using MapMat = ::Crafterra::DataType::Matrix<MapChip, init_field_map_width, init_field_map_height>;
 		using shape_t = ElevationUint;
-
-		//温度
-		std::unique_ptr<shape_t[][init_field_map_width] > temperature;
-		//降水量
-		std::unique_ptr<shape_t[][init_field_map_width] > amount_of_rainfall;
-		//標高
-		std::unique_ptr<shape_t[][init_field_map_width] > elevation;
 
 		Uint32 temperature_seed;
 		Uint32 amount_of_rainfall_seed;
@@ -85,15 +78,13 @@ namespace Crafterra {
 	public:
 
 		Terrain(const Uint32 temperature_seed_, const Uint32 amount_of_rainfall_seed_, const Uint32 elevation_seed_)
-			:temperature(CRAFTERRA_NEW shape_t[init_field_map_height][init_field_map_width])
-			, amount_of_rainfall(CRAFTERRA_NEW shape_t[init_field_map_height][init_field_map_width])
-			, elevation(CRAFTERRA_NEW shape_t[init_field_map_height][init_field_map_width])
-			, temperature_seed(temperature_seed_)
+			:
+			  temperature_seed(temperature_seed_)
 			, amount_of_rainfall_seed(amount_of_rainfall_seed_)
 			, elevation_seed(elevation_seed_)
-			, perlin_temperature_seed(1)
-			, perlin_amount_of_rainfall_seed(1)
-			, perlin_elevation_seed(1)
+			, perlin_temperature_seed(temperature_seed_)
+			, perlin_amount_of_rainfall_seed(amount_of_rainfall_seed_)
+			, perlin_elevation_seed(elevation_seed_)
 		{
 
 		}
@@ -108,10 +99,10 @@ namespace Crafterra {
 			for (::Crafterra::DataType::IndexUint row{}; row < init_field_map_height; ++row)
 				for (::Crafterra::DataType::IndexUint col{}; col < init_field_map_width; ++col) {
 					MapChip& field_map = field_map_matrix[row][col];
+					field_map.setElevation3(0);
 
-					const ElevationUint elevation2 = field_map.getBlockElevation();
 					ElevationUint elevation3 = 0;
-					for (::Crafterra::DataType::IndexUint row3{ row }; elevation3 <= elevation2; --row3, ++elevation3) {
+					for (::Crafterra::DataType::IndexUint row3{ row }; elevation3 <= field_map.getBlockElevation(); --row3, ++elevation3) {
 						if (field_map_matrix[row3][col].getElevation3() < elevation3) field_map_matrix[row3][col].setElevation3(elevation3);
 						if (row3 == 0) break;
 					}
@@ -158,11 +149,9 @@ namespace Crafterra {
 						break;
 					}
 
-					//field_map_matrix[row][col].setDrawChip();
-
-					const Int32 row2 = row - field_map_matrix[row][col].getBlockElevation();
+					const Int32 row2 = Int32(row) - Int32(field_map_matrix[row][col].getBlockElevation());
 					if (row2 >= 0) {
-						if (!field_map_matrix[row][col].getIsCliff())
+						//if (!field_map_matrix[row][col].getIsCliff())
 							//field_map_matrix[row2][col].setDrawChip(field_map_matrix[row][col].getDrawChip());
 							field_map_matrix[row2][col].setColor(field_map_matrix[row][col].getColor());
 						field_map_matrix[row2][col].setDrawBiome(field_map_matrix[row][col].getBiome());
@@ -172,9 +161,7 @@ namespace Crafterra {
 			// どこが崖になっているか調べる
 			for (::Crafterra::DataType::Int32 col{}; col < init_field_map_width; ++col)
 				for (::Crafterra::DataType::Int32 row{ 1 }; row < init_field_map_height; ++row) {
-					if (field_map_matrix[row][col].getElevation3() < field_map_matrix[row - 1][col].getElevation3()) {
-						field_map_matrix[row][col].setIsCliff(true); // 崖
-					}
+						field_map_matrix[row][col].setIsCliff(field_map_matrix[row][col].getElevation3() < field_map_matrix[row - 1][col].getElevation3()); // 崖
 				}
 			// 崖のオートタイルを計算
 			for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
@@ -233,115 +220,117 @@ namespace Crafterra {
 				}
 		}
 
-		void perlinNoiseGeneration(const IndexUint chunk_index_x_, const IndexUint chunk_index_y_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
+		void perlinNoiseGeneration(MapMat& field_map_matrix, const IndexUint chunk_index_x_, const IndexUint chunk_index_y_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
 			//温度
 			perlinNoise(
-				temperature,
+				[&field_map_matrix](const IndexUint x_, const IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setTemperature(value_); },
 				chunk_index_x_, chunk_index_y_, init_field_map_width / 2, init_field_map_height / 2,
 				start_x_, start_y_, end_x_, end_y_,
-				perlin_temperature_seed, 120.0, 6,
+				perlin_temperature_seed, 120.0, 5,
 				240, 100
 			);
 
 			//降水量
 			perlinNoise(
-				amount_of_rainfall,
+				[&field_map_matrix](const IndexUint x_, const IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setAmountOfRainfall(value_); },
 				chunk_index_x_, chunk_index_y_, init_field_map_width / 2, init_field_map_height / 2,
 				start_x_, start_y_, end_x_, end_y_,
-				perlin_amount_of_rainfall_seed, 120.0, 6,
+				perlin_amount_of_rainfall_seed, 120.0, 4,
 				225, 0
 			);
 
 			//標高
 			perlinNoise(
-				elevation,
+				[&field_map_matrix](const IndexUint x_, const IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setElevation(value_); },
 				chunk_index_x_, chunk_index_y_, init_field_map_width / 2, init_field_map_height / 2,
 				start_x_, start_y_, end_x_, end_y_,
-				perlin_elevation_seed, 70.0, 6,
+				perlin_elevation_seed, 70.0, 4,
 				195, 0
 			);
 		}
 
-		//void moveTerrain(MapMat& field_map_matrix, const Uint32 field_width_half_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
-		//	for (::Crafterra::DataType::IndexUint row{ start_y_ }; row < end_y_; ++row)
-		//		for (::Crafterra::DataType::IndexUint col{ start_x_  }; col < end_x_; ++col) {
-		//			field_map_matrix[row][col] = field_map_matrix[row][col];
-		//		}
-		//}
-
-		void moveUpTerrain(MapMat& field_map_matrix, const Uint32 field_width_half_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
-			for (::Crafterra::DataType::IndexUint row{ start_y_ }; row < end_y_; ++row)
-				for (::Crafterra::DataType::IndexUint col{ start_x_ }; col < end_x_; ++col) {
-					field_map_matrix[row][col] = field_map_matrix[row + field_width_half_][col];
+		// フィールドマップの下半分の地形が上半分へ移動する
+		void moveUpTerrain(MapMat& field_map_matrix, const Uint32 field_height_half_) const {
+			for (::Crafterra::DataType::IndexUint row{}; row < field_height_half_; ++row)
+				for (::Crafterra::DataType::IndexUint col{}; col < init_field_map_width; ++col) {
+					MapChip& field_map_after = field_map_matrix[row][col];
+					const MapChip& field_map_before = field_map_matrix[row + field_height_half_][col];
+					field_map_after = field_map_before;
 				}
 		}
-		void moveDownTerrain(MapMat& field_map_matrix, const Uint32 field_width_half_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
-			for (::Crafterra::DataType::IndexUint row{ start_y_ }; row < end_y_; ++row)
-				for (::Crafterra::DataType::IndexUint col{ start_x_ }; col < end_x_; ++col) {
-					field_map_matrix[row + field_width_half_][col] = field_map_matrix[row][col];
+		// フィールドマップの上半分の地形が下半分へ移動する
+		void moveDownTerrain(MapMat& field_map_matrix, const Uint32 field_height_half_) const {
+			for (::Crafterra::DataType::IndexUint row{}; row < field_height_half_; ++row)
+				for (::Crafterra::DataType::IndexUint col{}; col < init_field_map_width; ++col) {
+					MapChip& field_map_after = field_map_matrix[row + field_height_half_][col];
+					const MapChip& field_map_before = field_map_matrix[row][col];
+					field_map_after = field_map_before;
 				}
 		}
-		void moveLeftTerrain(MapMat& field_map_matrix, const Uint32 field_height_half_) {
+		// フィールドマップの右半分の地形が左半分へ移動する
+		void moveLeftTerrain(MapMat& field_map_matrix, const Uint32 field_width_half_) const {
 			for (::Crafterra::DataType::IndexUint row{}; row < init_field_map_height; ++row)
-				for (::Crafterra::DataType::IndexUint col{}; col < field_height_half_; ++col) {
-					field_map_matrix[row][col] = MapChip(); // フィールドマップの全ての値を初期化
-					field_map_matrix[row][col].setBiome(field_map_matrix[row][col + field_height_half_].getBiome());
-					field_map_matrix[row][col].setElevation(field_map_matrix[row][col + field_height_half_].getElevation());
-					field_map_matrix[row][col].setBlockElevation(field_map_matrix[row][col + field_height_half_].getBlockElevation());
+				for (::Crafterra::DataType::IndexUint col{}; col < field_width_half_; ++col) {
+					MapChip& field_map_after = field_map_matrix[row][col];
+					const MapChip& field_map_before = field_map_matrix[row][col + field_width_half_];
+					field_map_after = field_map_before;
 				}
 		}
-		void moveRightTerrain(MapMat& field_map_matrix, const Uint32 field_height_half_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
-			for (::Crafterra::DataType::IndexUint row{ start_y_ }; row < end_y_; ++row)
-				for (::Crafterra::DataType::IndexUint col{ start_x_ }; col < end_x_; ++col) {
-					field_map_matrix[row][col] = field_map_matrix[row + field_height_half_][col];
+		// フィールドマップの左半分の地形が右半分へ移動する
+		void moveRightTerrain(MapMat& field_map_matrix, const Uint32 field_width_half_) const {
+			for (::Crafterra::DataType::IndexUint row{}; row < init_field_map_height; ++row)
+				for (::Crafterra::DataType::IndexUint col{}; col < field_width_half_; ++col) {
+					MapChip& field_map_after = field_map_matrix[row][col + field_width_half_];
+					const MapChip& field_map_before = field_map_matrix[row][col];
+					field_map_after = field_map_before;
 				}
 		}
 
 		// フィールドマップを生成
-		void generation(MapMat& field_map_matrix, const IndexUint chunk_index_x_, const IndexUint chunk_index_y_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
+		void generation(MapMat& field_map_matrix, const Uint32 chunk_index_x_, const Uint32 chunk_index_y_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
 
-			perlinNoiseGeneration(chunk_index_x_, chunk_index_y_, start_x_, start_y_, end_x_, end_y_);
+			perlinNoiseGeneration(field_map_matrix, chunk_index_x_, chunk_index_y_, start_x_, start_y_, end_x_, end_y_);
 
 			//バイオームの分類分け
 			for (::Crafterra::DataType::IndexUint row{ start_y_ }; row < end_y_; ++row)
 				for (::Crafterra::DataType::IndexUint col{ start_x_ }; col < end_x_; ++col) {
 					MapChip& field_map = field_map_matrix[row][col];
-					field_map = MapChip(); // フィールドマップの全ての値を初期化
 
-					temperature[row][col] -= elevation[row][col] / 2;
-					if (elevation[row][col] < 110) {
+					field_map.setTemperature(field_map.getTemperature() - field_map.getElevation() / 2);
+					const ElevationUint temperature = field_map.getTemperature();
+					const ElevationUint elevation = field_map.getElevation();
+					const ElevationUint amount_of_rainfall = field_map.getAmountOfRainfall();
+
+					if (elevation < 110) {
 						field_map.setBiome(map_chip_type_biome_sea);
 					}
 					else
-						if (temperature[row][col] < 45) field_map.setBiome(map_chip_type_biome_rock);
-						else if (amount_of_rainfall[row][col] < 25) field_map.setBiome(map_chip_type_biome_savannah);
-						else if (amount_of_rainfall[row][col] < 75) {
-							if (temperature[row][col] < 120) field_map.setBiome(map_chip_type_biome_desert);
+						if (temperature < 45) field_map.setBiome(map_chip_type_biome_rock);
+						else if (amount_of_rainfall < 25) field_map.setBiome(map_chip_type_biome_savannah);
+						else if (amount_of_rainfall < 75) {
+							if (temperature < 120) field_map.setBiome(map_chip_type_biome_desert);
 							else field_map.setBiome(map_chip_type_biome_desert);
 						}
-						else if (temperature[row][col] < 69) field_map.setBiome(map_chip_type_biome_grass);
-						else if (temperature[row][col] < 96) field_map.setBiome(map_chip_type_biome_default);
-						else if (temperature[row][col] < 120) field_map.setBiome(map_chip_type_biome_forest);
-						else if (amount_of_rainfall[row][col] < 125) field_map.setBiome(map_chip_type_biome_mountain);
-						else if (temperature[row][col] < 132) field_map.setBiome(map_chip_type_biome_mountain);
+						else if (temperature < 69) field_map.setBiome(map_chip_type_biome_grass);
+						else if (temperature < 96) field_map.setBiome(map_chip_type_biome_default);
+						else if (temperature < 120) field_map.setBiome(map_chip_type_biome_forest);
+						else if (amount_of_rainfall < 125) field_map.setBiome(map_chip_type_biome_mountain);
+						else if (temperature < 132) field_map.setBiome(map_chip_type_biome_mountain);
 						else field_map.setBiome(map_chip_type_biome_mountain);
 
 					// 海
 					if (field_map.getBiome() == map_chip_type_biome_sea) {
 						field_map.setElevation(110);
-						field_map.setBlockElevation(110 / 16);
+						field_map.setBlockElevation(110 / 2);
 					}
-					else {
-						field_map.setElevation(elevation[row][col]);
-						field_map.setBlockElevation(elevation[row][col] / 16);
-					}
+					else field_map.setBlockElevation(elevation / 2);
 				}
 			setTerrain(field_map_matrix);
 		}
 		void initialGeneration(MapMat& field_map_matrix_) {
 			generation(field_map_matrix_, 0, 0, 0, 0, init_field_map_width, init_field_map_height);
 		}
-		void initialGeneration2(MapMat& field_map_matrix_, const IndexUint chunk_index_x_, const IndexUint chunk_index_y_) {
+		void initialGeneration(MapMat& field_map_matrix_, const Uint32 chunk_index_x_, const Uint32 chunk_index_y_) {
 			generation(field_map_matrix_, chunk_index_x_, chunk_index_y_, 0, 0, init_field_map_width, init_field_map_height);
 		}
 

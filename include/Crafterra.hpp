@@ -66,7 +66,7 @@ namespace Crafterra {
 	}
 	// マップサイズ
 	constexpr ::Crafterra::DataType::IndexUint init_field_map_width = 1024;
-	constexpr ::Crafterra::DataType::IndexUint init_field_map_height = 512;
+	constexpr ::Crafterra::DataType::IndexUint init_field_map_height = 1024;
 }
 
 // 初回読み込み

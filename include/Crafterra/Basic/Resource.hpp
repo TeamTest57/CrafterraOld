@@ -48,8 +48,8 @@ namespace Crafterra {
 		CharacterChipImage& getCharacterChip() { return *(this->character_chip); }
 
 	private:
-		int window_width = 0;
-		int window_height = 0;
+		IndexUint window_width = 0;
+		IndexUint window_height = 0;
 
 	public:
 		void setWindowWidth(const ::Crafterra::DataType::IndexUint window_width_) { this->window_width = window_width_; }

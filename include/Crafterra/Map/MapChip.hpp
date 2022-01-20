@@ -64,24 +64,25 @@ namespace Crafterra {
 	// マップチップ情報を管理
 	class MapChip {
 	private:
-		// マップチップの色
-		::Crafterra::Color::Color3 rgb{};
-		BiomeType biome{ map_chip_type_biome_empty };
-		BlockType block{};
+		// ---------- 元の座標系 ----------
 
-		MapChipTypeHomogeneousConnection cliff_top{ map_chip_type_homogeneous_connection_size };
-		MapChipTypeHomogeneousConnection cliff{ map_chip_type_homogeneous_connection_size };
-		bool is_cliff = false;
+		::Crafterra::Color::Color3 rgb{}; // マップチップの色
+		BiomeType biome{ map_chip_type_biome_empty }; // バイオーム
+		BlockType block{}; // ブロック
+		ElevationUint block_elevation{}; // ブロックの高さに合わせた標高値
 
 		ElevationUint elevation{}; // 元の標高値
-		ElevationUint block_elevation{}; // ブロックの高さに合わせた標高値
+		ElevationUint temperature{}; // 気温
+		ElevationUint amount_of_rainfall{}; // 降水量
+
+		// ---------- 描画座標系 ----------
+
+		MapChipTypeHomogeneousConnection cliff_top{ map_chip_type_homogeneous_connection_size }; // 崖上タイルの種類
+		MapChipTypeHomogeneousConnection cliff{ map_chip_type_homogeneous_connection_size }; // 崖タイルの種類
+		bool is_cliff = false;
 		ElevationUint elevation3{}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
-
-
 		BiomeType draw_biome{ map_chip_type_biome_empty }; // 描画用バイオーム
-
-		AutoTile auto_tile{};
-
+		AutoTile auto_tile{}; // 描画用オートタイル
 		int draw_chip = -1;
 
 	public:
@@ -91,8 +92,8 @@ namespace Crafterra {
 			cliff = map_chip_type_homogeneous_connection_size;
 			is_cliff = false;
 
-			elevation = {}; // 元の標高値
-			block_elevation = {}; // ブロックの高さに合わせた標高値
+			// elevation = {}; // 元の標高値
+			// block_elevation = {}; // ブロックの高さに合わせた標高値
 			elevation3 = {}; // カメラの位置にずらした、ブロックの高さに合わせた標高値
 			auto_tile = {};
 			draw_chip = -1;
@@ -164,6 +165,18 @@ namespace Crafterra {
 		}
 		void setElevation(const ElevationUint& elevation_) {
 			this->elevation = elevation_;
+		}
+		ElevationUint getTemperature() const {
+			return this->temperature;
+		}
+		void setTemperature(const ElevationUint& temperature_) {
+			this->temperature = temperature_;
+		}
+		ElevationUint getAmountOfRainfall() const {
+			return this->amount_of_rainfall;
+		}
+		void setAmountOfRainfall(const ElevationUint& amount_of_rainfall_) {
+			this->amount_of_rainfall = amount_of_rainfall_;
 		}
 		ElevationUint getBlockElevation() const {
 			return this->block_elevation;

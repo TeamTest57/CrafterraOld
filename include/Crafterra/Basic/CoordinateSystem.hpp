@@ -63,6 +63,23 @@ namespace Crafterra {
 			this->setMapChipHeight(height_);
 		}
 
+		void expandMapChipWidth(const cs_f32 width_) {
+			this->map_chip_size.expandWidth(width_);
+			this->camera_size.setWidth(cs_f32(this->window_size.getWidth()) / this->map_chip_size.getWidth());
+		}
+		void expandMapChipHeight(const cs_f32 height_) {
+			this->map_chip_size.expandHeight(height_);
+			this->camera_size.setHeight(cs_f32(this->window_size.getHeight()) / this->map_chip_size.getHeight());
+		}
+		void expandMapChipSize(const cs_f32 size_) {
+			this->expandMapChipWidth(size_);
+			this->expandMapChipHeight(size_);
+		}
+		void expandMapChipSize(const cs_f32 width_, const cs_f32 height_) {
+			this->expandMapChipWidth(width_);
+			this->expandMapChipHeight(height_);
+		}
+
 		CoordinateSystem(const cs_uint ww_, const cs_uint wh_) :
 			window_size(ww_, wh_)
 			, field_map_size(init_field_map_width, init_field_map_height)
