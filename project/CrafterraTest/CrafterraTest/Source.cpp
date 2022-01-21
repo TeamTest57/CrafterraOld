@@ -19,7 +19,7 @@
 #include <DxLib.h>
 
 // Crafterra 
-#include <Crafterra.hpp>
+#include <Crafterra/Crafterra.hpp>
 
 #include <memory>
 
@@ -73,7 +73,7 @@ namespace Crafterra {
 
 			// 地形
 			Terrain terrain(temperature_seed, amount_of_rainfall_seed, elevation_seed);
-			terrain.initialGeneration(field_map_matrix, chunk_x,chunk_y);
+			terrain.initialGeneration(field_map_matrix, chunk_x, chunk_y);
 
 			InputKey key;
 
@@ -121,11 +121,11 @@ namespace Crafterra {
 					key_displacement = 2.f;
 					break;
 				}
-
+#ifndef __APPLE__
 				// キー関連
 				{
 					key.setKey();
-					if(     key.getKey(KEY_INPUT_LSHIFT) == 0
+					if (key.getKey(KEY_INPUT_LSHIFT) == 0
 						&& key.getKey(KEY_INPUT_RSHIFT) == 0
 						&& key.getKey(KEY_INPUT_LCONTROL) == 0
 						&& key.getKey(KEY_INPUT_RCONTROL) == 0
@@ -172,12 +172,13 @@ namespace Crafterra {
 						}
 					}
 				}
+#endif // !__APPLE__
 				// 無限生成処理
 				{
 					// 右側に生成
 					if (cs.camera_size.getCenterX() > float(cs.field_map_size.getCenterX() + (cs.field_map_size.getWidthHalf() * 2 / 3))) {
 						cs.camera_size.moveX(-float(cs.field_map_size.getWidthHalf()));
-						if(chunk_x >= chunk_max_x - 1) chunk_x = chunk_min_x;
+						if (chunk_x >= chunk_max_x - 1) chunk_x = chunk_min_x;
 						else ++chunk_x;
 						terrain.moveLeftTerrain(field_map_matrix, init_field_map_width / 2);
 						terrain.generation(field_map_matrix, chunk_x + 1, chunk_y, init_field_map_width / 2, 0, init_field_map_width, init_field_map_height);
@@ -348,12 +349,13 @@ namespace Crafterra {
 
 				// 座標を文字として出力
 				//DrawFormatStringToHandle(10, 50, GetColor(255, 255, 255), resource_.getFont().getFont(),
-				DrawBox(0, 0, 200, 180, 0x44444444, TRUE);
+				//DrawBox(0, 0, 200, 180, AsLib2::Color(40).getColor(), TRUE);
+				::AsLib2::DrawRect{ ::AsLib2::Rect{0,0,200,180}, ::AsLib2::Color(40) }.draw();
 				DxLib::printfDx(
 					u8"カメラ中央X: %.2f\nカメラ中央Y: %.2f\nカメラ開始X: %.2f\nカメラ終了Y: %.2f\n1:飛空艇視点\n2:人間視点\nJ:カメラを遠ざける\nK:カメラを近づける\nバイオーム: %s\n%d"
 					, cs.camera_size.getCenterX(), cs.camera_size.getCenterY()
 					, cs.camera_size.getStartX(), cs.camera_size.getStartY()
-					, MapChipTypeBiomeString[field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getBiome()].c_str()
+					, MapChipTypeBiomeString[field_map_matrix[IndexUint(cs.camera_size.getCenterY())][IndexUint(cs.camera_size.getCenterX())].getDrawBiome()].c_str()
 					//, int(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 1))
 					, resource_.getMapChip().getDesert(getAutoTileIndex(field_map_matrix[100][100].getAutoTile().auto_tile_lower_left, 0, 0))
 					//, field_map_matrix[100][100].getCliffTop()

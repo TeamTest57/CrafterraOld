@@ -29,7 +29,11 @@
 #include <Crafterra/Basic/InitRead.hpp>
 #include <Crafterra/DataType/StringDataType.hpp>
 
+#ifdef __WINDOWS__
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+#elif __APPLE__
+int ios_main()
+#endif // __WINDOWS__
 {
 	// 読み込む
 	::Crafterra::InitRead init_read("Settings.txt");
@@ -45,7 +49,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	::DxLib::SetMainWindowText(title_name.c_str());
 	// フルスクリーンではなくウィンドウで表示
 	if (!init_read.isFullscreen()) {
+#ifdef __WINDOWS__
 		::DxLib::ChangeWindowMode(TRUE);
+#endif // __WINDOWS__
 		::DxLib::SetGraphMode(
 			init_read.getWindowWidth(), // Crafterra::System::init_window_width, 
 			init_read.getWindowHeight(), // Crafterra::System::init_window_height, 

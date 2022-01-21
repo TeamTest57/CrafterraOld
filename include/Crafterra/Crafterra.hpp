@@ -16,8 +16,8 @@
 
 ##########################################################################################*/
 
-#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_HPP
-#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_HPP
+#ifndef INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_CRAFTERRA_HPP
+#define INCLUDED_CRAFTERRA_LIBRARY_CRAFTERRA_CRAFTERRA_HPP
 
 //##########################################################################################
 // Macro
@@ -85,16 +85,7 @@ namespace Crafterra {
 
 //##########################################################################################
 #ifdef CRAFTERRA_USE_DXLIB
-#include <Crafterra/ThirdParty/DxLib/DxDataType.hpp>
-// 入力系
-#include <Crafterra/ThirdParty/DxLib/DxKeyboard.hpp>
-#include <Crafterra/ThirdParty/DxLib/DxFont.hpp>
-#include <Crafterra/ThirdParty/DxLib/DxMusic.hpp>
-#include <Crafterra/ThirdParty/DxLib/DxMapChip.hpp>
-#include <Crafterra/ThirdParty/DxLib/DxCharacterChip.hpp>
-
-// DxLib 系の中でも 1 番遅く include する
-#include <Crafterra/ThirdParty/DxLib/CrafterraForDxLib.hpp>
+#include <AsLib2/AsLib2.hpp>
 
 #else
 namespace Crafterra {

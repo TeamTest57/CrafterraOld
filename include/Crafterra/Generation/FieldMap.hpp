@@ -159,13 +159,13 @@ namespace Crafterra {
 
 				}
 			// どこが崖になっているか調べる
-			for (::Crafterra::DataType::Int32 col{}; col < init_field_map_width; ++col)
-				for (::Crafterra::DataType::Int32 row{ 1 }; row < init_field_map_height; ++row) {
+			for (::Crafterra::DataType::IndexUint col{}; col < init_field_map_width; ++col)
+				for (::Crafterra::DataType::IndexUint row{ 1 }; row < init_field_map_height; ++row) {
 						field_map_matrix[row][col].setIsCliff(field_map_matrix[row][col].getElevation3() < field_map_matrix[row - 1][col].getElevation3()); // 崖
 				}
 			// 崖のオートタイルを計算
-			for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
-				for (::Crafterra::DataType::Int32 row{}; row < init_field_map_height - 1; ++row) {
+			for (::Crafterra::DataType::IndexUint col{ 1 }; col < init_field_map_width - 1; ++col)
+				for (::Crafterra::DataType::IndexUint row{}; row < init_field_map_height - 1; ++row) {
 					field_map_matrix[row][col].setCliff(
 						getHomogeneousConnectionCliff(
 							field_map_matrix[row][col - 1].getIsCliff() || ((!field_map_matrix[row][col - 1].getIsCliff()) && field_map_matrix[row][col].getElevation3() < field_map_matrix[row][col - 1].getElevation3())
@@ -175,8 +175,8 @@ namespace Crafterra {
 					);
 				}
 
-			for (::Crafterra::DataType::Int32 col{ 1 }; col < init_field_map_width - 1; ++col)
-				for (::Crafterra::DataType::Int32 row{ 1 }; row < init_field_map_height - 1; ++row) {
+			for (::Crafterra::DataType::IndexUint col{ 1 }; col < init_field_map_width - 1; ++col)
+				for (::Crafterra::DataType::IndexUint row{ 1 }; row < init_field_map_height - 1; ++row) {
 					if (field_map_matrix[row][col].getIsCliff()) continue;
 					// 崖上のオートタイルを計算 ( 一部バグがあり、未完成 )
 					field_map_matrix[row][col].setCliffTop(
@@ -220,7 +220,7 @@ namespace Crafterra {
 				}
 		}
 
-		void perlinNoiseGeneration(MapMat& field_map_matrix, const IndexUint chunk_index_x_, const IndexUint chunk_index_y_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
+		void perlinNoiseGeneration(MapMat& field_map_matrix, const Uint32 chunk_index_x_, const Uint32 chunk_index_y_, const Uint32 start_x_, const Uint32 start_y_, const Uint32 end_x_, const Uint32 end_y_) {
 			//温度
 			perlinNoise(
 				[&field_map_matrix](const IndexUint x_, const IndexUint y_, const ElevationUint value_) { field_map_matrix[y_][x_].setTemperature(value_); },

@@ -34,7 +34,10 @@ namespace Crafterra {
 
 	public:
 		void setKey() {
+#ifndef __APPLE__
 			::DxLib::GetHitKeyStateAll(this->tmp_key); // 全てのキーの入力状態を取得
+#endif // !__APPLE__
+
 			for (int i = 0; i < 256; ++i) {
 				if (this->tmp_key[i] != 0) {
 					this->up_key[i] = false;

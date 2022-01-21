@@ -64,8 +64,8 @@ namespace Crafterra {
 
 		}
 
-		int getCharacterChip(const int character_id_, const int index_) const {
-			return this->character_chip[this->character_start_index_chip[character_id_] + index_];
+		int getCharacterChip(const IndexUint character_id_, const IndexUint index_) const {
+			return this->character_chip[IndexUint(this->character_start_index_chip[character_id_]) + index_];
 		}
 
 	};
